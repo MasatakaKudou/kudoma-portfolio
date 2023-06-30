@@ -5,5 +5,3 @@
 
 - `.envrc` : .nvmrcに記載されているnodeバージョンに切り替え(direnvを利用して)
 - `.nvmrc` : nodeバージョンを管理
-- `package.json`
-- `.gitignore`
