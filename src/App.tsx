@@ -15,6 +15,8 @@ import zennIcon from './images/zenn-icon.svg';
 import qiitaIcon from './images/qiita-icon.png';
 import sdIcon from './images/sd-icon.png';
 import githubIcon from './images/github-icon.png';
+
+import Same from './Same';
 import './App.css';
 
 const theme = createTheme({
@@ -28,9 +30,16 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Container sx={{ marginY: 3 }}>
-        <Typography variant='h2'>Kudoma<br/>　Portfolio</Typography>
+        <Stack direction='row' alignItems='center'>
+          <Typography variant='h2' color={ theme.palette.primary.main } sx={{ marginRight: 1 }}>Kudoma</Typography>
+          <Same />
+        </Stack>
+        <Stack direction='row' alignItems='center'>
+          <Same />
+          <Typography variant='h2' sx={{ marginLeft: 1 }}>Portfolio</Typography>
+        </Stack>
         <Typography variant='h3' color={theme.palette.primary.main} sx={{ marginTop: 5 }}>About</Typography>
-        <Container>
+        <Container sx={{ marginTop: 2 }}>
           <Image src={meLogo} />
           <Typography variant='h4' sx={{ marginTop: 2 }}>Intro</Typography>
           <Typography>

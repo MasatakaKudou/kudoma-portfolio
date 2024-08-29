@@ -1,6 +1,9 @@
+import Image from 'mui-image';
+import same from './images/same.png';
+
 const Same = () => {
   return (
-    <img src='same.png' className='same' alt="same" />
+    <Image src={same} alt="same" fit='contain' height={60} width='auto' />
   );
 };
   
