@@ -54,7 +54,7 @@ function App() {
         <Typography variant='h3' sx={{ marginTop: 5 }}>About</Typography>
         <Container sx={{ marginTop: 2 }}>
           <Image src={meLogo} />
-          <Typography variant='h4' sx={{ marginTop: 2 }}>Intro</Typography>
+          <Typography variant='h5' sx={{ borderBottom: 1, marginTop: 2, marginBottom: 1 }} >自己紹介</Typography>
           <Typography>
             青森県出身のエンジニア。<br />
             大学2年時に、ハッカソンに参加し、何もできなかったことが悔しく、プログラミングを自主的に学び始める。<br />
@@ -62,7 +62,7 @@ function App() {
             大学卒業後、化粧品・美容の総合情報サイトを運営する会社に入社し、エンジニアとして働く。<br />
             趣味は海釣り、アニメ鑑賞。
           </Typography>
-          <Typography variant='h4' sx={{ marginTop: 2 }}>Accounts</Typography>
+          <Typography variant='h5' sx={{ borderBottom: 1, marginTop: 2, marginBottom: 1 }}>アカウント</Typography>
           <Stack direction='row' useFlexGap flexWrap='wrap'>
             <AccountLogo src={zennIcon} url='https://zenn.dev/tuna0210' name='zenn-icon' />
             <AccountLogo src={qiitaIcon} url='https://qiita.com/kudoma' name="qiita-icon" />
@@ -91,7 +91,7 @@ function App() {
           </AccordionDetails>
         </Accordion>
         <Container>
-          <Typography variant='h5' sx={{ borderBottom: 1, marginY: 1 }}>フロントエンド</Typography>
+          <Typography variant='h6' sx={{ borderBottom: 1, marginY: 1 }}>フロントエンド</Typography>
           <Stack direction='row' flexWrap='wrap' sx={{ justifyContent: 'space-around' }}>
             <Skill name='HTML' rating={2} />
             <Skill name='JavaScript' rating={2} />
@@ -102,7 +102,7 @@ function App() {
           </Stack>
         </Container>
         <Container>
-          <Typography variant='h5' sx={{ borderBottom: 1, marginTop: 2, marginBottom: 1 }}>バックエンド</Typography>
+          <Typography variant='h6' sx={{ borderBottom: 1, marginTop: 2, marginBottom: 1 }}>バックエンド</Typography>
           <Stack direction='row' flexWrap='wrap' sx={{ justifyContent: 'space-around' }}>
             <Skill name='TypeScript' rating={3} />
             <Skill name='Node.js' rating={2} />
@@ -114,7 +114,7 @@ function App() {
           </Stack>
         </Container>
         <Container>
-          <Typography variant='h5' sx={{ borderBottom: 1, marginTop: 2, marginBottom: 1 }}>インフラ</Typography>
+          <Typography variant='h6' sx={{ borderBottom: 1, marginTop: 2, marginBottom: 1 }}>インフラ</Typography>
           <Stack direction='row' flexWrap='wrap' sx={{ justifyContent: 'space-around' }}>
             <Skill name='AWS' rating={3} />
             <Skill name='Terraform' rating={2} />

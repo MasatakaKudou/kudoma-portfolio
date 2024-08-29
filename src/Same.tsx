@@ -3,7 +3,7 @@ import same from './images/same.png';
 
 const Same = () => {
   return (
-    <Image src={same} alt="same" fit='contain' height={60} width='auto' />
+    <Image src={same} alt="same" fit='contain' height={60} width={60} />
   );
 };
   
