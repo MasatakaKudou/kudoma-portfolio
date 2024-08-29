@@ -29,14 +29,14 @@ function App() {
       <CssBaseline />
       <Container sx={{ marginY: 3 }}>
         <Typography variant='h2'>Kudoma<br/>　Portfolio</Typography>
-        <Typography variant='h3' sx={{ marginTop: 5 }}>About</Typography>
-        <Stack direction='row' useFlexGap flexWrap='wrap'>
+        <Typography variant='h3' color={theme.palette.primary.main} sx={{ marginTop: 5 }}>About</Typography>
+        <Container>
           <Image src={meLogo} />
           <Typography variant='h4' sx={{ marginTop: 2 }}>Intro</Typography>
           <Typography>
             青森県出身のエンジニア。<br />
             大学2年時に、ハッカソンに参加し、何もできなかったことが悔しく、プログラミングを自主的に学び始める。<br />
-            大学3,4年時に、アルバイトでHPやWebアプリの開発を経験し、エンジニアになることを決意。<br />
+            その後、アルバイトでHPやWebAPの開発を経験し、エンジニアになることを決意。<br />
             大学卒業後、化粧品・美容の総合情報サイトを運営する会社に入社し、エンジニアとして働く。<br />
             趣味は海釣り、アニメ鑑賞。
           </Typography>
@@ -47,8 +47,8 @@ function App() {
             <AccountLogo src={sdIcon} url='https://speakerdeck.com/kudoma' name="speakerdeck-icon" />
             <AccountLogo src={githubIcon} url='https://github.com/MasatakaKudou' name="github-icon" />
           </Stack>
-        </Stack>
-        <Typography variant='h3' sx={{ marginTop: 5 }}>Skills</Typography>
+        </Container>
+        <Typography variant='h3' color={theme.palette.primary.main} sx={{ marginTop: 5 }}>Skills</Typography>
         <Accordion sx={{ marginY: 2 }}>
           <AccordionSummary
             expandIcon={<ExpandMoreIcon />}
@@ -69,7 +69,7 @@ function App() {
           </AccordionDetails>
         </Accordion>
         <Container>
-          <Typography variant='h5'>フロントエンド</Typography>
+          <Typography variant='h5' sx={{ borderBottom: 1, borderColor: 'primary.main', marginY: 1 }}>フロントエンド</Typography>
           <Stack direction='row' flexWrap='wrap' sx={{ justifyContent: 'space-around' }}>
             <Skill name='HTML' rating={2} />
             <Skill name='JavaScript' rating={2} />
@@ -80,7 +80,7 @@ function App() {
           </Stack>
         </Container>
         <Container>
-          <Typography variant='h5' sx={{ marginTop: 2 }}>バックエンド</Typography>
+          <Typography variant='h5' sx={{ borderBottom: 1, borderColor: 'primary.main', marginTop: 2, marginBottom: 1 }}>バックエンド</Typography>
           <Stack direction='row' flexWrap='wrap' sx={{ justifyContent: 'space-around' }}>
             <Skill name='TypeScript' rating={3} />
             <Skill name='Node.js' rating={2} />
@@ -92,7 +92,7 @@ function App() {
           </Stack>
         </Container>
         <Container>
-          <Typography variant='h5' sx={{ marginTop: 2 }}>インフラ</Typography>
+          <Typography variant='h5' sx={{ borderBottom: 1, borderColor: 'primary.main', marginTop: 2, marginBottom: 1 }}>インフラ</Typography>
           <Stack direction='row' flexWrap='wrap' sx={{ justifyContent: 'space-around' }}>
             <Skill name='AWS' rating={3} />
             <Skill name='Terraform' rating={2} />
@@ -100,7 +100,7 @@ function App() {
             <Skill name='Docker' rating={2} />
           </Stack>
         </Container>
-        <Typography variant='h3' sx={{ marginTop: 5 }}>Experiences</Typography>
+        <Typography variant='h3' color={theme.palette.primary.main} sx={{ marginTop: 5 }}>Experiences</Typography>
         <Container sx={{ marginTop: 2 }}>
           <Typography variant='h5' sx={{ marginY: 1, border: 1, borderColor: 'primary.main', borderRadius: '15px' , padding: 1 }}>SSRとパフォーマンス向上によるSEO向上</Typography>
           <Typography variant='h6' sx={{ borderBottom: 1, borderColor: 'primary.main', marginY: 1 }}>期間</Typography>
