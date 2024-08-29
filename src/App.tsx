@@ -10,7 +10,11 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
-import meLogo from './me.jpg';
+import meLogo from './images/me.jpg';
+import zennIcon from './images/zenn-icon.svg';
+import qiitaIcon from './images/qiita-icon.png';
+import sdIcon from './images/sd-icon.png';
+import githubIcon from './images/github-icon.png';
 import './App.css';
 
 const theme = createTheme({
@@ -38,10 +42,10 @@ function App() {
           </Typography>
           <Typography variant='h4' sx={{ marginTop: 2 }}>Accounts</Typography>
           <Stack direction='row' useFlexGap flexWrap='wrap'>
-            <AccountLogo src='zenn-icon.svg' url='https://zenn.dev/tuna0210' name='zenn-icon' />
-            <AccountLogo src='qiita-icon.png' url='https://qiita.com/kudoma' name="qiita-icon" />
-            <AccountLogo src="sd-icon.png" url='https://speakerdeck.com/kudoma' name="speakerdeck-icon" />
-            <AccountLogo src="github-icon.png" url='https://github.com/MasatakaKudou' name="github-icon" />
+            <AccountLogo src={zennIcon} url='https://zenn.dev/tuna0210' name='zenn-icon' />
+            <AccountLogo src={qiitaIcon} url='https://qiita.com/kudoma' name="qiita-icon" />
+            <AccountLogo src={sdIcon} url='https://speakerdeck.com/kudoma' name="speakerdeck-icon" />
+            <AccountLogo src={githubIcon} url='https://github.com/MasatakaKudou' name="github-icon" />
           </Stack>
         </Stack>
         <Typography variant='h3' sx={{ marginTop: 5 }}>Skills</Typography>
