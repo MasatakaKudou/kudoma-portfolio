@@ -1,13 +1,13 @@
-import Skill from './Skill';
+import Skill from './components/Skill';
 import {
   Skills,
   SkillsProps,
-} from './Skills';
-import AccountLogo from './AccountLogo';
+} from './components/Skills';
+import AccountLogo from './components/AccountLogo';
 import {
   Experience,
   ExperienceProps,
- } from './Experience';
+ } from './components/Experience';
 
 import { Container, Typography, Stack, Divider } from '@mui/material';
 import Image from 'mui-image';
@@ -25,7 +25,7 @@ import qiitaIcon from './images/qiita-icon.png';
 import sdIcon from './images/sd-icon.png';
 import githubIcon from './images/github-icon.png';
 
-import Same from './Same';
+import Same from './components/Same';
 import './App.css';
 
 const theme = createTheme({
