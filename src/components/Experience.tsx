@@ -1,10 +1,9 @@
 import React from 'react';
 
-import MediumHeading from './MediumHeading';
-import SmallHeading from './SmallHeading';
+import MediumHeading from './fonts/MediumHeading';
+import SmallHeading from './fonts/SmallHeading';
 
 import { 
-  Typography,
   Container,
   Accordion,
   AccordionSummary,

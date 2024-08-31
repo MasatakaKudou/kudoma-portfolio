@@ -1,8 +1,8 @@
 import Skill from './components/Skill';
 import AccountLogo from './components/AccountLogo';
 import SiteLogo from './components/SiteLogo';
-import MainHeading from './components/MainHeading';
-import MediumHeading from './components/MediumHeading';
+import MainHeading from './components/fonts/MainHeading';
+import MediumHeading from './components/fonts/MediumHeading';
 import { Skills } from './components/Skills';
 import { Experience } from './components/Experience';
 
