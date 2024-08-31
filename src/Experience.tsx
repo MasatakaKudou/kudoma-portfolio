@@ -33,13 +33,13 @@ export const Experience: React.FC<ExperienceProps> = (props) => {
           <Container>
             { props.period }
           </Container>
-          <Typography variant='h6' sx={{ borderBottom: 1, marginY: 1 }}>担当業務</Typography>
+          <Typography variant='h6' sx={{ borderBottom: 1, marginTop: 2, marginBottom: 1 }}>担当業務</Typography>
           <Container>
             { props.tasks.map((task, index) => (
               <div key={index}>{ task }</div>
             ))}
           </Container>
-          <Typography variant='h6' sx={{ borderBottom: 1, marginY: 1 }}>使用技術</Typography>
+          <Typography variant='h6' sx={{ borderBottom: 1, marginTop: 2, marginBottom: 1 }}>使用技術</Typography>
           <Container>
             { props.languages.map((language, index) => (
               <div key={index}>{ language }</div>
