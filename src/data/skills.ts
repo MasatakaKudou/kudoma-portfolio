@@ -8,7 +8,7 @@ export const skills: SkillsProps[] = [
       { name: 'JavaScript', rating: 3 },
       { name: 'Vue.js', rating: 2 },
       { name: 'Nuxt.js', rating: 2 },
-      { name: 'React.js', rating: 1 },
+      { name: 'React.js', rating: 2 },
       { name: 'CSS', rating: 1 },
     ]
   },
@@ -20,8 +20,8 @@ export const skills: SkillsProps[] = [
       { name: 'Express.js', rating: 2 },
       { name: 'PHP', rating: 3 },
       { name: 'Laravel', rating: 3 },
-      { name: 'MySQL', rating: 1 },
-      { name: 'SQLServer', rating: 1 },
+      { name: 'MySQL', rating: 2 },
+      { name: 'SQLServer', rating: 2 },
     ]
   },
   {
