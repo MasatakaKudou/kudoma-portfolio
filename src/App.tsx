@@ -1,5 +1,10 @@
 import Skill from './Skill'
 import AccountLogo from './AccountLogo';
+import {
+  Experience,
+  ExperienceProps,
+ } from './Experience';
+
 import { Container, Typography, Stack, Divider } from '@mui/material';
 import Image from 'mui-image';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -38,6 +43,102 @@ const theme = createTheme({
   },
 });
 
+const experiences: ExperienceProps[] = [
+  {
+    title: 'SSRとパフォーマンス向上によるSEO向上',
+    period: '2021/11 ~ 2022/10（12ヶ月間）',
+    tasks: [
+      'APIエンドポイント設計',
+      'コードリーディングして仕様書の作成',
+      '言語リプレイス',
+      'API構築',
+      'ユニットテスト実装',
+      'Vuexなどの軽い実装',
+      'パフォーマンステスト',
+      '結合テスト',
+    ],
+    languages: [
+      'PHP',
+      'JavaScript',
+      'TypeScript',
+      'Node.js',
+      'Express.js',
+      'Vue.js',
+      'Nuxt.js',
+      'SQLServer',
+      'k6',
+    ],
+  },
+  {
+    title: 'システム運用',
+    period: '2022/11 ~ 2023/04（6ヶ月間）',
+    tasks: [
+      'チケットの認識合わせ',
+      'リファクタリング',
+      '障害の報告/原因追及/復旧',
+      'チケット対応',
+      '└ ライブラリのバージョンアップ',
+      '└ etc...',
+    ],
+    languages: [
+      'PHP',
+      'Laravel',
+      'SQLServer',
+    ],
+  },
+  {
+    title: 'CMSをAWSへ移行',
+    period: '2023/05 ~ 2024/04（12ヶ月間）',
+    tasks: [
+      'AWSアーキテクチャ設計',
+      'AWS移行',
+      '└ Webアプリ x2',
+      '└ API x1',
+      '└ バッチ x1',
+      'プロジェクト管理',
+      '仕様書の作成',
+      'AWS上で機能するように実装修正',
+      'AWSリソースの構築を自動化（IaC）',
+      'OS/ミドルウェアの構築を自動化（IaC）',
+      '保守/ノウハウ共有用ドキュメントの作成',
+      'パフォーマンステスト',
+      'オンプレのリソース削除',
+    ],
+    languages: [
+      'PHP',
+      'JavaScript',
+      'Laravel',
+      'SQLServer',
+      'MySQL',
+      'Terraform',
+      'Ansible',
+      'AWS',
+    ],
+  },
+  {
+    title: '生成バッチをAWSへ移行',
+    period: '2024/05 ~ 2024/09（5ヶ月間）',
+    tasks: [
+      'AWSアーキテクチャ設計',
+      'AWS移行',
+      'プロジェクト管理',
+      'ピープルマネジメント',
+      'テスト仕様書の作成',
+      'AWS上で機能するように実装修正',
+      'AWSリソースの構築を自動化（IaC）',
+      '保守/ノウハウ共有用ドキュメントの作成',
+      'オンプレのリソース削除',
+    ],
+    languages: [
+      'PHP',
+      'Laravel',
+      'Terraform',
+      'AWS',
+      'Docker',
+    ],
+  },
+];
+
 function App() {
   return (
     <ThemeProvider theme={theme}>
@@ -71,25 +172,27 @@ function App() {
           </Stack>
         </Container>
         <Typography variant='h3' sx={{ marginTop: 5 }}>Skills</Typography>
-        <Accordion sx={{ marginY: 2 }}>
-          <AccordionSummary
-            expandIcon={<ExpandMoreIcon />}
-            aria-controls="panel1-content"
-            id="panel1-header"
-          >
-            <Stack direction='row'>
-              <InfoIcon sx={{ marginRight: 1 }} />
-              <Typography>スキルレベルの基準</Typography>
-            </Stack>
-          </AccordionSummary>
-          <AccordionDetails>
-            <Skill rating={1} description='具体的なゴールと学習対象、壁打ちが必要' />
-            <Skill rating={2} description='具体的なゴールと壁打ちが必要' />
-            <Skill rating={3} description='大まかなゴールと壁打ちが必要' />
-            <Skill rating={4} description='大まかなゴールが必要' />
-            <Skill rating={5} description='自走' />
-          </AccordionDetails>
-        </Accordion>
+        <Container sx={{ marginY: 2 }}>
+          <Accordion>
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon />}
+              aria-controls="panel1-content"
+              id="panel1-header"
+            >
+              <Stack direction='row'>
+                <InfoIcon sx={{ marginRight: 1 }} />
+                <Typography>スキルレベルの基準</Typography>
+              </Stack>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Skill rating={1} description='具体的なゴールと学習対象、壁打ちが必要' />
+              <Skill rating={2} description='具体的なゴールと壁打ちが必要' />
+              <Skill rating={3} description='大まかなゴールと壁打ちが必要' />
+              <Skill rating={4} description='大まかなゴールが必要' />
+              <Skill rating={5} description='自走' />
+            </AccordionDetails>
+          </Accordion>
+        </Container>
         <Container>
           <Typography variant='h6' sx={{ borderBottom: 1, marginY: 1 }}>フロントエンド</Typography>
           <Stack direction='row' flexWrap='wrap' sx={{ justifyContent: 'space-around' }}>
@@ -123,119 +226,9 @@ function App() {
           </Stack>
         </Container>
         <Typography variant='h3' sx={{ marginTop: 5 }}>Experiences</Typography>
-        <Container sx={{ marginTop: 2 }}>
-          <Typography variant='h5' sx={{ marginY: 1, border: 1, backgroundColor: theme.palette.background.paper, borderRadius: '15px' , padding: 1 }}>SSRとパフォーマンス向上によるSEO向上</Typography>
-          <Typography variant='h6' sx={{ borderBottom: 1, marginY: 1 }}>期間</Typography>
-          <Container>
-            2021/11 ~ 2022/10（12ヶ月間）
-          </Container>
-          <Typography variant='h6' sx={{ borderBottom: 1, marginY: 1 }}>担当業務</Typography>
-          <Container>
-            APIエンドポイント設計<br />
-            コードリーディングして仕様書の作成<br />
-            言語リプレイス<br />
-            API構築<br />
-            ユニットテスト実装<br />
-            Vuexなどの軽い実装<br />
-            パフォーマンステスト<br />
-            結合テスト
-          </Container>
-          <Typography variant='h6' sx={{ borderBottom: 1, marginY: 1 }}>使用技術</Typography>
-          <Container>
-            PHP<br />
-            JavaScript<br />
-            TypeScript<br />
-            Node.js<br />
-            Express.js<br />
-            Vue.js<br />
-            Nuxt.js<br />
-            SQLServer<br />
-            k6
-          </Container>
-        </Container>
-        <Container sx={{ marginTop: 2 }}>
-          <Typography variant='h5' sx={{ marginY: 1, border: 1, backgroundColor: theme.palette.background.paper, borderRadius: '15px' , padding: 1 }}>システム運用</Typography>
-          <Typography variant='h6' sx={{ borderBottom: 1, marginY: 1 }}>期間</Typography>
-          <Container>
-            2022/11 ~ 2023/04（6ヶ月間）
-          </Container>
-          <Typography variant='h6' sx={{ borderBottom: 1, marginY: 1 }}>担当業務</Typography>
-          <Container>
-            チケットの認識合わせ<br />
-            リファクタリング<br />
-            障害の報告/原因追及/復旧<br />
-            チケット対応<br />
-            └ ライブラリのバージョンアップ<br />
-            └ etc...
-          </Container>
-          <Typography variant='h6' sx={{ borderBottom: 1, marginY: 1 }}>使用技術</Typography>
-          <Container>
-            PHP<br />
-            Laravel<br />
-            SQLServer
-          </Container>
-        </Container>
-        <Container sx={{ marginTop: 2 }}>
-          <Typography variant='h5' sx={{ marginY: 1, border: 1, backgroundColor: theme.palette.background.paper, borderRadius: '15px' , padding: 1 }}>CMSをAWSへ移行</Typography>
-          <Typography variant='h6' sx={{ borderBottom: 1, marginY: 1 }}>期間</Typography>
-          <Container>
-            2023/05 ~ 2024/04（12ヶ月間）
-          </Container>
-          <Typography variant='h6' sx={{ borderBottom: 1, marginY: 1 }}>担当業務</Typography>
-          <Container>
-            AWSアーキテクチャ設計<br />
-            AWS移行<br />
-            └ Webアプリ x2<br />
-            └ API x1<br />
-            └ バッチ x1<br />
-            プロジェクト管理<br />
-            仕様書の作成<br />
-            AWS上で機能するように実装修正<br />
-            AWSリソースの構築を自動化（IaC）<br />
-            OS/ミドルウェアの構築を自動化（IaC）<br />
-            保守/ノウハウ共有用ドキュメントの作成<br />
-            パフォーマンステスト<br />
-            オンプレのリソース削除
-          </Container>
-          <Typography variant='h6' sx={{ borderBottom: 1, marginY: 1 }}>使用技術</Typography>
-          <Container>
-            PHP<br />
-            JavaScript<br />
-            Laravel<br />
-            SQLServer<br />
-            MySQL<br />
-            Terraform<br />
-            Ansible<br />
-            AWS
-          </Container>
-        </Container>
-        <Container sx={{ marginTop: 2 }}>
-          <Typography variant='h5' sx={{ marginY: 1, border: 1, backgroundColor: theme.palette.background.paper, borderRadius: '15px' , padding: 1 }}>生成バッチをAWSへ移行</Typography>
-          <Typography variant='h6' sx={{ borderBottom: 1, marginY: 1 }}>期間</Typography>
-          <Container>
-            2024/05 ~ 2024/09（5ヶ月間）
-          </Container>
-          <Typography variant='h6' sx={{ borderBottom: 1, marginY: 1 }}>担当業務</Typography>
-          <Container>
-            AWSアーキテクチャ設計<br />
-            AWS移行<br />
-            プロジェクト管理<br />
-            ピープルマネジメント<br />
-            テスト仕様書の作成<br />
-            AWS上で機能するように実装修正<br />
-            AWSリソースの構築を自動化（IaC）<br />
-            保守/ノウハウ共有用ドキュメントの作成<br />
-            オンプレのリソース削除
-          </Container>
-          <Typography variant='h6' sx={{ borderBottom: 1, marginY: 1 }}>使用技術</Typography>
-          <Container>
-            PHP<br />
-            Laravel<br />
-            Terraform<br />
-            AWS<br />
-            Docker
-          </Container>
-        </Container>
+        {experiences.map((experience, index) => (
+          <Experience key={index} {...experience} />
+        ))}
         <Divider sx={{ marginTop: 5, borderColor: 'primary.main' }} />
         <Typography color={ theme.palette.text.secondary } sx={{ marginTop: 1, textAlign: 'center' }}>Kudoma Portfolio</Typography>
       </Container>
