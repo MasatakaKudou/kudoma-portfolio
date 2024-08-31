@@ -1,5 +1,5 @@
 import Image from 'mui-image';
-import same from './images/same.png';
+import same from '../images/same.png';
 
 const Same = () => {
   return (
