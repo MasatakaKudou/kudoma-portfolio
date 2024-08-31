@@ -1,4 +1,7 @@
 import React from 'react';
+
+import MediumHeading from './MediumHeading';
+
 import { 
   Typography,
   Container,
@@ -19,14 +22,14 @@ export interface ExperienceProps {
 
 export const Experience: React.FC<ExperienceProps> = (props) => {
   return (
-    <Container sx={{ marginTop: 1 }}>
+    <Container sx={{ marginTop: 2 }}>
       <Accordion>
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
           aria-controls="panel-content"
           id="panel-header"
         >
-          <Typography variant='h5'>{ props.title }</Typography>
+          <MediumHeading title={props.title} />
         </AccordionSummary>
         <AccordionDetails>
           <Typography variant='h6' sx={{ borderBottom: 1, marginBottom: 1 }}>期間</Typography>

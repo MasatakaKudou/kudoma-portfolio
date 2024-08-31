@@ -1,5 +1,8 @@
 import Skill from './components/Skill';
 import AccountLogo from './components/AccountLogo';
+import SiteLogo from './components/SiteLogo';
+import MainHeading from './components/MainHeading';
+import MediumHeading from './components/MediumHeading';
 import { Skills } from './components/Skills';
 import { Experience } from './components/Experience';
 
@@ -22,7 +25,6 @@ import qiitaIcon from './images/qiita-icon.png';
 import sdIcon from './images/sd-icon.png';
 import githubIcon from './images/github-icon.png';
 
-import Same from './components/Same';
 import './App.css';
 
 const theme = createTheme({
@@ -42,6 +44,15 @@ const theme = createTheme({
       secondary: '#0077be', // 海の青に合わせた色
     },
   },
+  components: {
+    MuiTypography: {
+      styleOverrides: {
+        h2: {
+          color: '#00aaff',
+        }
+      }
+    }
+  },
 });
 
 function App() {
@@ -49,18 +60,11 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Container sx={{ marginY: 3 }}>
-        <Stack direction='row' alignItems='center'>
-          <Typography variant='h2' color={ theme.palette.text.secondary } sx={{ marginRight: 1 }}>Kudoma</Typography>
-          <Same />
-        </Stack>
-        <Stack direction='row' alignItems='center'>
-          <Same />
-          <Typography variant='h2' color={ theme.palette.text.secondary } sx={{ marginLeft: 1 }}>Portfolio</Typography>
-        </Stack>
-        <Typography variant='h3' sx={{ marginTop: 5 }}>About</Typography>
+        <SiteLogo />
+        <MainHeading title='About' />
         <Container sx={{ marginTop: 2 }}>
           <Image src={meLogo} />
-          <Typography variant='h5' sx={{ borderBottom: 1, marginTop: 2, marginBottom: 1 }} >自己紹介</Typography>
+          <MediumHeading title='自己紹介' underline />
           <Typography>
             青森県出身のエンジニア。<br />
             大学2年時に、ハッカソンに参加し、何もできなかったことが悔しく、プログラミングを自主的に学び始める。<br />
@@ -68,7 +72,7 @@ function App() {
             大学卒業後、化粧品・美容の総合情報サイトを運営する会社に入社し、エンジニアとして働く。<br />
             趣味は海釣り、アニメ鑑賞。
           </Typography>
-          <Typography variant='h5' sx={{ borderBottom: 1, marginTop: 2, marginBottom: 1 }}>アカウント</Typography>
+          <MediumHeading title='アカウント' underline />
           <Stack direction='row' useFlexGap flexWrap='wrap'>
             <AccountLogo src={zennIcon} url='https://zenn.dev/tuna0210' name='zenn-icon' />
             <AccountLogo src={qiitaIcon} url='https://qiita.com/kudoma' name="qiita-icon" />
@@ -76,7 +80,7 @@ function App() {
             <AccountLogo src={githubIcon} url='https://github.com/MasatakaKudou' name="github-icon" />
           </Stack>
         </Container>
-        <Typography variant='h3' sx={{ marginTop: 5 }}>Skills</Typography>
+        <MainHeading title='Skills' />
         <Container sx={{ marginY: 2 }}>
           <Accordion>
             <AccordionSummary
@@ -101,7 +105,7 @@ function App() {
         {skills.map((skill, index) => (
           <Skills key={index} {...skill} />
         ))}
-        <Typography variant='h3' sx={{ marginTop: 5 }}>Experiences</Typography>
+        <MainHeading title='Experiences' />
         {experiences.map((experience, index) => (
           <Experience key={index} {...experience} />
         ))}
