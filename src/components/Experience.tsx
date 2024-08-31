@@ -1,6 +1,7 @@
 import React from 'react';
 
 import MediumHeading from './MediumHeading';
+import SmallHeading from './SmallHeading';
 
 import { 
   Typography,
@@ -32,17 +33,17 @@ export const Experience: React.FC<ExperienceProps> = (props) => {
           <MediumHeading title={props.title} />
         </AccordionSummary>
         <AccordionDetails>
-          <Typography variant='h6' sx={{ borderBottom: 1, marginBottom: 1 }}>期間</Typography>
+          <SmallHeading title='期間' firstElement />
           <Container>
             { props.period }
           </Container>
-          <Typography variant='h6' sx={{ borderBottom: 1, marginTop: 2, marginBottom: 1 }}>担当業務</Typography>
+          <SmallHeading title='担当業務' />
           <Container>
             { props.tasks.map((task, index) => (
               <div key={index}>{ task }</div>
             ))}
           </Container>
-          <Typography variant='h6' sx={{ borderBottom: 1, marginTop: 2, marginBottom: 1 }}>使用技術</Typography>
+          <SmallHeading title='使用技術' />
           <Container>
             { props.languages.map((language, index) => (
               <div key={index}>{ language }</div>
