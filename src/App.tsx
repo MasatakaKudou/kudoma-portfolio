@@ -1,4 +1,8 @@
-import Skill from './Skill'
+import Skill from './Skill';
+import {
+  Skills,
+  SkillsProps,
+} from './Skills';
 import AccountLogo from './AccountLogo';
 import {
   Experience,
@@ -139,6 +143,41 @@ const experiences: ExperienceProps[] = [
   },
 ];
 
+const skills: SkillsProps[] = [
+  {
+    area: 'フロントエンド',
+    skills: [
+      { name: 'HTML', rating: 2 },
+      { name: 'JavaScript', rating: 3 },
+      { name: 'Vue.js', rating: 2 },
+      { name: 'Nuxt.js', rating: 2 },
+      { name: 'React.js', rating: 1 },
+      { name: 'CSS', rating: 1 },
+    ]
+  },
+  {
+    area: 'バックエンド',
+    skills: [
+      { name: 'TypeScript', rating: 3 },
+      { name: 'Node.js', rating: 2 },
+      { name: 'Express.js', rating: 2 },
+      { name: 'PHP', rating: 3 },
+      { name: 'Laravel', rating: 3 },
+      { name: 'MySQL', rating: 1 },
+      { name: 'SQLServer', rating: 1 },
+    ]
+  },
+  {
+    area: 'インフラ',
+    skills: [
+      { name: 'AWS', rating: 3 },
+      { name: 'Terraform', rating: 3 },
+      { name: 'Ansible', rating: 2 },
+      { name: 'Docker', rating: 2 },
+    ]
+  },
+];
+
 function App() {
   return (
     <ThemeProvider theme={theme}>
@@ -193,38 +232,9 @@ function App() {
             </AccordionDetails>
           </Accordion>
         </Container>
-        <Container>
-          <Typography variant='h6' sx={{ borderBottom: 1, marginY: 1 }}>フロントエンド</Typography>
-          <Stack direction='row' flexWrap='wrap' sx={{ justifyContent: 'space-around' }}>
-            <Skill name='HTML' rating={2} />
-            <Skill name='JavaScript' rating={2} />
-            <Skill name='Vue.js' rating={2} />
-            <Skill name='Nuxt.js' rating={2} />
-            <Skill name='React.js' rating={1} />
-            <Skill name='CSS' rating={1} />
-          </Stack>
-        </Container>
-        <Container>
-          <Typography variant='h6' sx={{ borderBottom: 1, marginTop: 2, marginBottom: 1 }}>バックエンド</Typography>
-          <Stack direction='row' flexWrap='wrap' sx={{ justifyContent: 'space-around' }}>
-            <Skill name='TypeScript' rating={3} />
-            <Skill name='Node.js' rating={2} />
-            <Skill name='Express.js' rating={2} />
-            <Skill name='PHP' rating={3} />
-            <Skill name='Laravel' rating={3} />
-            <Skill name='MySQL' rating={1} />
-            <Skill name='SQLServer' rating={1} />
-          </Stack>
-        </Container>
-        <Container>
-          <Typography variant='h6' sx={{ borderBottom: 1, marginTop: 2, marginBottom: 1 }}>インフラ</Typography>
-          <Stack direction='row' flexWrap='wrap' sx={{ justifyContent: 'space-around' }}>
-            <Skill name='AWS' rating={3} />
-            <Skill name='Terraform' rating={2} />
-            <Skill name='Ansible' rating={2} />
-            <Skill name='Docker' rating={2} />
-          </Stack>
-        </Container>
+        {skills.map((skill, index) => (
+          <Skills key={index} {...skill} />
+        ))}
         <Typography variant='h3' sx={{ marginTop: 5 }}>Experiences</Typography>
         {experiences.map((experience, index) => (
           <Experience key={index} {...experience} />
