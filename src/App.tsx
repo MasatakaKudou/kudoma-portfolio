@@ -8,7 +8,6 @@ import { Experience } from './components/Experience';
 
 import { experiences } from './data/experiences';
 import { skills } from './data/skills';
-import { products } from './data/products';
 
 import { Container, Typography, Stack, Divider } from '@mui/material';
 import Image from 'mui-image';
