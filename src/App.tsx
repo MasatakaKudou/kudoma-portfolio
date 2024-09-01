@@ -8,6 +8,7 @@ import { Experience } from './components/Experience';
 
 import { experiences } from './data/experiences';
 import { skills } from './data/skills';
+import { products } from './data/products';
 
 import { Container, Typography, Stack, Divider } from '@mui/material';
 import Image from 'mui-image';
@@ -109,6 +110,12 @@ function App() {
         {experiences.map((experience, index) => (
           <Experience key={index} {...experience} />
         ))}
+        {/* <MainHeading title='Products' />
+        <Container>
+          {products.map((product, index) => (
+            <Product key={index} {...product} />
+          ))}
+        </Container> */}
         <Divider sx={{ marginTop: 5, borderColor: 'primary.main' }} />
         <Typography color={ theme.palette.text.secondary } sx={{ marginTop: 1, textAlign: 'center' }}>Kudoma Portfolio</Typography>
       </Container>
