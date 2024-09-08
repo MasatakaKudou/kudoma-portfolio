@@ -1,3 +1,5 @@
+import { useState, useEffect } from 'react';
+
 import Skill from './components/Skill';
 import AccountLogo from './components/AccountLogo';
 import SiteLogo from './components/SiteLogo';
@@ -5,9 +7,15 @@ import MainHeading from './components/fonts/MainHeading';
 import MediumHeading from './components/fonts/MediumHeading';
 import { Skills } from './components/Skills';
 import { Experience } from './components/Experience';
+import { Blog } from './components/Blog';
 
 import { experiences } from './data/experiences';
 import { skills } from './data/skills';
+
+import HttpClient from './utils/HttpClient';
+import CacheClient from './utils/CacheClient';
+
+import { QiitaResponse } from './types/BlogType';
 
 import { Container, Typography, Stack, Divider } from '@mui/material';
 import Image from 'mui-image';
@@ -56,6 +64,27 @@ const theme = createTheme({
 });
 
 function App() {
+  const [qiitaArticles, setQiitaArticles] = useState<QiitaResponse[] | null>(null);
+
+  useEffect(() => {
+    const client = new HttpClient();
+    const cacheClient = new CacheClient();
+    const fetchArticles = async () => {
+      const cachedArticles = await cacheClient.get<QiitaResponse[]>('qiita-blog');
+      if (cachedArticles) {
+        setQiitaArticles(cachedArticles);
+      }
+
+      const articles = await client.request<QiitaResponse[]>(process.env.REACT_APP_QIITA_API_ENDPOINT);
+      if (!articles) {
+        return;
+      }
+      await cacheClient.set('qiita-blog', articles);
+      setQiitaArticles(articles);
+    };
+    fetchArticles();
+  }, []);
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -115,6 +144,15 @@ function App() {
             <Product key={index} {...product} />
           ))}
         </Container> */}
+        <MainHeading title='Blog' />
+        <Container>
+          {
+            qiitaArticles?.length ?
+            qiitaArticles.map((article, index) => (
+              <Blog key={index} title={article.title} />
+            )) : <p>Qiita Loading...</p>
+          }
+        </Container>
         <Divider sx={{ marginTop: 5, borderColor: 'primary.main' }} />
         <Typography color={ theme.palette.text.secondary } sx={{ marginTop: 1, textAlign: 'center' }}>Kudoma Portfolio</Typography>
       </Container>
