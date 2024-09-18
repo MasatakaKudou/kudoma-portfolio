@@ -71,7 +71,8 @@ function App() {
     const cacheClient = new CacheClient();
     const fetchArticles = async () => {
       const test = await fetch('https://kudoma-portfolio-backend.nisino7se.workers.dev/');
-      console.log(test.body);
+      const text = await test.text();
+      console.log(text);
       if (process.env.REACT_ENV === 'production') {
         const cachedArticles = await cacheClient.get<Article[]>('qiita-blog');
         if (cachedArticles) {
