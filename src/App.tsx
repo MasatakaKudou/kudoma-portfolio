@@ -73,7 +73,7 @@ function App() {
       const test = await fetch('https://kudoma-portfolio-backend.nisino7se.workers.dev/');
       const text = await test.text();
       console.log(text);
-      if (process.env.REACT_ENV === 'production') {
+      if (process.env.REACT_APP_ENV === 'production') {
         const cachedArticles = await cacheClient.get<Article[]>('qiita-blog');
         if (cachedArticles) {
           setQiitaArticles(cachedArticles);
@@ -93,7 +93,7 @@ function App() {
         }
       });
 
-      if (process.env.REACT_ENV === 'production') {
+      if (process.env.REACT_APP_ENV === 'production') {
         await cacheClient.set('qiita-blog', articles);
       }
 
