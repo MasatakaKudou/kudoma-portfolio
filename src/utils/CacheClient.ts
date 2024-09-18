@@ -23,20 +23,31 @@ export default class CacheClient {
     try {
       const endpoint = this.buildUrl('get', key);
       const response = await this.client.request<CacheGetResponse>(endpoint);
+      console.log({response});
       if (!response || !response.result) {
         return;
       }
 
       return JSON.parse(response.result);
     } catch (error) {
-      console.error(error);
-      throw new Error(`Failed to get cache - key: ${key}`);
+      console.error(`Failed to get cache - key: ${key} because of ${error}`);
     }
   }
 
-  public async set(key: string, value: any): Promise<'OK' | undefined> {
+  public async set(key: string, value: Object[] | Object): Promise<'OK' | undefined> {
     try {
-      const endpoint = this.buildUrl('set', key, value);
+      if (Array.isArray(value)) {
+        const valueForCache = JSON.stringify(value);
+        const endpoint = this.buildUrl('set', key, valueForCache);
+        const response = await this.client.request<CacheSetResponse>(endpoint);
+        if (!response || response.result !== 'OK') {
+          return;
+        }
+        return response.result;
+      }
+      
+      const valueForCache = JSON.stringify(value);
+      const endpoint = this.buildUrl('set', key, valueForCache);
       const response = await this.client.request<CacheSetResponse>(endpoint);
       if (!response || response.result !== 'OK') {
         return;
@@ -63,12 +74,11 @@ export default class CacheClient {
     }
   }
 
-  private buildUrl(method: string, key: string, value: any = undefined): string {
+  private buildUrl(method: string, key: string, value: string | undefined = undefined): string {
     const baseUrl = new URL(process.env.REACT_APP_UPSTASH_REDIS_REST_URL);
 
     if (value) {
-      const valueForCache = JSON.stringify(value);
-      baseUrl.pathname = `${method}/${key}/${valueForCache}`; 
+      baseUrl.pathname = `${method}/${key}/${value}`; 
     } else {
       baseUrl.pathname = `${method}/${key}`; 
     }

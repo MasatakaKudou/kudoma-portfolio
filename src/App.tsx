@@ -15,7 +15,7 @@ import { skills } from './data/skills';
 import HttpClient from './utils/HttpClient';
 import CacheClient from './utils/CacheClient';
 
-import { QiitaResponse } from './types/BlogType';
+import { Article, QiitaResponse } from './types/BlogType';
 
 import { Container, Typography, Stack, Divider } from '@mui/material';
 import Image from 'mui-image';
@@ -64,22 +64,36 @@ const theme = createTheme({
 });
 
 function App() {
-  const [qiitaArticles, setQiitaArticles] = useState<QiitaResponse[] | null>(null);
+  const [qiitaArticles, setQiitaArticles] = useState<Article[] | null>(null);
 
   useEffect(() => {
     const client = new HttpClient();
     const cacheClient = new CacheClient();
     const fetchArticles = async () => {
-      const cachedArticles = await cacheClient.get<QiitaResponse[]>('qiita-blog');
-      if (cachedArticles) {
-        setQiitaArticles(cachedArticles);
+      if (process.env.REACT_ENV === 'production') {
+        const cachedArticles = await cacheClient.get<Article[]>('qiita-blog');
+        if (cachedArticles) {
+          setQiitaArticles(cachedArticles);
+          return;
+        }
       }
 
-      const articles = await client.request<QiitaResponse[]>(process.env.REACT_APP_QIITA_API_ENDPOINT);
-      if (!articles) {
+      const response = await client.request<QiitaResponse[]>(process.env.REACT_APP_QIITA_API_ENDPOINT);
+      if (!response) {
         return;
       }
-      await cacheClient.set('qiita-blog', articles);
+      const articles = response.map(({ title, updated_at, url }) => {
+        return {
+          title,
+          updatedAt: updated_at,
+          url,
+        }
+      });
+
+      if (process.env.REACT_ENV === 'production') {
+        await cacheClient.set('qiita-blog', articles);
+      }
+      
       setQiitaArticles(articles);
     };
     fetchArticles();
