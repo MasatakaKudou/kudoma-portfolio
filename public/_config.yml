@@ -1,2 +1,4 @@
 plugins:
   - jekyll-sitemap
+exclude:
+  - googlec71ae29e0a1db3c9.html
