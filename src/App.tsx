@@ -70,18 +70,13 @@ function App() {
     const client = new HttpClient();
     const cacheClient = new CacheClient();
     const fetchArticles = async () => {
-      const test = await fetch('https://kudoma-portfolio-backend.nisino7se.workers.dev/');
-      const text = await test.text();
-      console.log(text);
-      if (process.env.REACT_APP_ENV === 'production') {
-        const cachedArticles = await cacheClient.get<Article[]>('qiita-blog');
-        if (cachedArticles) {
-          setQiitaArticles(cachedArticles);
-          return;
-        }
+      const cachedArticles = await cacheClient.get<Article[]>('qiita-blog');
+      if (cachedArticles) {
+        setQiitaArticles(cachedArticles);
+        return;
       }
 
-      const response = await client.request<QiitaResponse[]>(process.env.REACT_APP_QIITA_API_ENDPOINT);
+      const response = await client.get<QiitaResponse[]>(process.env.REACT_APP_QIITA_API_ENDPOINT);
       if (!response) {
         return;
       }
@@ -93,9 +88,7 @@ function App() {
         }
       });
 
-      if (process.env.REACT_APP_ENV === 'production') {
-        await cacheClient.set('qiita-blog', articles);
-      }
+      await cacheClient.set('qiita-blog', articles);
 
       setQiitaArticles(articles);
     };

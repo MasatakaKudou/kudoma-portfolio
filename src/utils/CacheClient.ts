@@ -1,15 +1,8 @@
 import HttpClient from "./HttpClient";
 
 interface CacheGetResponse {
-  result: string | null;
-}
-
-interface CacheSetResponse {
-  result: 'OK' | null;
-}
-
-interface CacheDeleteResponse {
-  result: number;
+  key: string;
+  value: string;
 }
 
 export default class CacheClient {
@@ -20,71 +13,45 @@ export default class CacheClient {
   }
 
   public async get<T>(key: string): Promise<T | undefined> {
-    try {
-      const endpoint = this.buildUrl('get', key);
-      const response = await this.client.request<CacheGetResponse>(endpoint);
-      console.log({response});
-      if (!response || !response.result) {
-        return;
-      }
+    const endpoint = new URL(process.env.REACT_APP_CACHE_BASE_URL);
+    endpoint.pathname = 'get';
+    endpoint.searchParams.append('key', key);
 
-      return JSON.parse(response.result);
-    } catch (error) {
-      console.error(`Failed to get cache - key: ${key} because of ${error}`);
+    const response = await this.client.get<CacheGetResponse>(endpoint.toString());
+    if (!response) {
+      console.error(`Not found cache - url: ${endpoint}`);
+      return;
     }
+
+    return JSON.parse(response.value);
   }
 
-  public async set(key: string, value: Object[] | Object): Promise<'OK' | undefined> {
+  public async set(key: string, value: Object[] | Object): Promise<boolean> {
+    const endpoint = new URL(process.env.REACT_APP_CACHE_BASE_URL);
+    endpoint.pathname = 'set';
+
+    const valueForRequestBody = JSON.stringify(value);
     try {
-      if (Array.isArray(value)) {
-        const valueForCache = JSON.stringify(value);
-        const endpoint = this.buildUrl('set', key, valueForCache);
-        const response = await this.client.request<CacheSetResponse>(endpoint);
-        if (!response || response.result !== 'OK') {
-          return;
-        }
-        return response.result;
-      }
-      
-      const valueForCache = JSON.stringify(value);
-      const endpoint = this.buildUrl('set', key, valueForCache);
-      const response = await this.client.request<CacheSetResponse>(endpoint);
-      if (!response || response.result !== 'OK') {
-        return;
-      }
-      return response.result;
+      await this.client.post(endpoint.toString(), { key, value: valueForRequestBody });
+      return true;
     } catch (error) {
-      console.error(error);
-      throw new Error(`Failed to set cache - key: ${key}, value: ${value}`);
+      console.error(`Failed to set cache - key: ${key}, value: ${value}, error: ${error}`);
+      return false;
     }
   }
 
   // for testing purposes
-  public async delete(key: string): Promise<number | undefined> {
-    try {
-      const endpoint = this.buildUrl('del', key);
-      const response = await this.client.request<CacheDeleteResponse>(endpoint);
-      if (!response || response.result === 0) {
-        return;
-      }
-      return response.result;
-    } catch (error) {
-      console.error(error);
-      throw new Error(`Failed to delete cache - key: ${key}`);
-    }
-  }
-
-  private buildUrl(method: string, key: string, value: string | undefined = undefined): string {
-    const baseUrl = new URL(process.env.REACT_APP_UPSTASH_REDIS_REST_URL);
-
-    if (value) {
-      baseUrl.pathname = `${method}/${key}/${value}`; 
-    } else {
-      baseUrl.pathname = `${method}/${key}`; 
-    }
-
-    baseUrl.searchParams.append('_token', process.env.REACT_APP_UPSTASH_REDIS_REST_TOKEN);
-
-    return baseUrl.toString();
-  }
+  // public async delete(key: string): Promise<number | undefined> {
+  //   try {
+  //     const endpoint = this.buildUrl('del', key);
+  //     const response = await this.client.request<CacheDeleteResponse>(endpoint);
+  //     if (!response || response.result === 0) {
+  //       return;
+  //     }
+  //     return response.result;
+  //   } catch (error) {
+  //     console.error(error);
+  //     throw new Error(`Failed to delete cache - key: ${key}`);
+  //   }
+  // }
 }
