@@ -3,33 +3,31 @@ import React from 'react';
 import {
   Card,
   CardContent,
-  CardMedia,
   CardActionArea,
+  Chip,
+  Stack,
   Typography,
 } from '@mui/material';
 
-export interface ProductProps {
+export interface BlogProps {
+  updatedAt: string;
+  platform: string;
   title: string;
+  url: string;
 }
 
-export const Blog: React.FC<ProductProps> = (props) => {
+export const Blog: React.FC<BlogProps> = ({ updatedAt, platform, title, url }) => {
+  const updatedDate = new Date(updatedAt);
   return (
     <Card sx={{ maxWidth: 345, marginTop: 2 }}>
-      <CardActionArea>
-        <CardMedia
-          component='img'
-          height='150px'
-          image={require('../../src/images/same.png')}
-          alt={ props.title }
-          // sx={{ padding: 2 }}
-        />
+      <CardActionArea href={ url }>
         <CardContent>
-          <Typography gutterBottom variant="h5" component="div">
-            { props.title }
-          </Typography>
-          <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-            Lizards are a widespread group of squamate reptiles, with over 6,000
-            species, ranging across all continents except Antarctica
+          <Stack direction='row' flexWrap='wrap'>
+            <Chip label={ platform } sx={{ marginRight: 1 }} />
+            <Chip label={ updatedDate.toLocaleDateString() + ' 更新' } />
+          </Stack>
+          <Typography sx={{ marginTop: 1 }}>
+            { title }
           </Typography>
         </CardContent>
       </CardActionArea>

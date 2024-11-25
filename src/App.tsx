@@ -15,7 +15,7 @@ import { skills } from './data/skills';
 import HttpClient from './utils/HttpClient';
 import CacheClient from './utils/CacheClient';
 
-import { Article, QiitaResponse } from './types/BlogType';
+import { Article, QiitaResponse, ZennResponse } from './types/BlogType';
 
 import { Container, Typography, Stack, Divider } from '@mui/material';
 import Image from 'mui-image';
@@ -95,6 +95,38 @@ function App() {
     fetchArticles();
   }, []);
 
+  // const [zennArticles, setZennArticles] = useState<Article[] | null>(null);
+
+  // useEffect(() => {
+  //   const client = new HttpClient();
+  //   const cacheClient = new CacheClient();
+  //   const fetchArticles = async () => {
+  //     const cachedArticles = await cacheClient.get<Article[]>('zenn-blog');
+  //     if (cachedArticles) {
+  //       setZennArticles(cachedArticles);
+  //       return;
+  //     }
+
+  //     const response = await client.get<ZennResponse>(process.env.REACT_APP_ZENN_API_ENDPOINT);
+  //     console.log(response);
+  //     if (!response) {
+  //       return;
+  //     }
+  //     const articles = response.articles.map(({ title, body_updated_at, path }) => {
+  //       return {
+  //         title,
+  //         updatedAt: body_updated_at,
+  //         url: `https://zenn.dev${path}`,
+  //       }
+  //     });
+
+  //     await cacheClient.set('zenn-blog', articles);
+
+  //     setZennArticles(articles);
+  //   };
+  //   fetchArticles();
+  // }, []);
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -156,12 +188,32 @@ function App() {
         </Container> */}
         <MainHeading title='Blog' />
         <Container>
-          {
-            qiitaArticles?.length ?
-            qiitaArticles.map((article, index) => (
-              <Blog key={index} title={article.title} />
-            )) : <p>Qiita Loading...</p>
-          }
+          <Stack direction='row' flexWrap='wrap' sx={{ justifyContent: 'space-around' }}>
+          {/* {
+              zennArticles?.length ?
+              zennArticles.map(({updatedAt, title, url}, index) => (
+                <Blog
+                  key={index}
+                  updatedAt={updatedAt}
+                  platform='Zenn'
+                  title={title}
+                  url={url}
+                />
+              )) : <p>Zenn Loading...</p>
+            } */}
+            {
+              qiitaArticles?.length ?
+              qiitaArticles.map(({updatedAt, title, url}, index) => (
+                <Blog
+                  key={index}
+                  updatedAt={updatedAt}
+                  platform='Qiita'
+                  title={title}
+                  url={url}
+                />
+              )) : <p>Qiita Loading...</p>
+            }
+          </Stack>
         </Container>
         <Divider sx={{ marginTop: 5, borderColor: 'primary.main' }} />
         <Typography color={ theme.palette.text.secondary } sx={{ marginTop: 1, textAlign: 'center' }}>Kudoma Portfolio</Typography>
