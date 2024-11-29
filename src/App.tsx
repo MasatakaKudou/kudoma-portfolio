@@ -12,10 +12,9 @@ import { Blog } from './components/Blog';
 import { experiences } from './data/experiences';
 import { skills } from './data/skills';
 
-import HttpClient from './utils/HttpClient';
-import CacheClient from './utils/CacheClient';
+import ArticleService from './service/ArticleService';
 
-import { Article, QiitaResponse, ZennResponse } from './types/BlogType';
+import { Article } from './types/BlogType';
 
 import { Container, Typography, Stack, Divider } from '@mui/material';
 import Image from 'mui-image';
@@ -67,65 +66,15 @@ function App() {
   const [qiitaArticles, setQiitaArticles] = useState<Article[] | null>(null);
 
   useEffect(() => {
-    const client = new HttpClient();
-    const cacheClient = new CacheClient();
     const fetchArticles = async () => {
-      const cachedArticles = await cacheClient.get<Article[]>('qiita-blog');
-      if (cachedArticles) {
-        setQiitaArticles(cachedArticles);
-        return;
-      }
-
-      const response = await client.get<QiitaResponse[]>(process.env.REACT_APP_QIITA_API_ENDPOINT);
-      if (!response) {
-        return;
-      }
-      const articles = response.map(({ title, updated_at, url }) => {
-        return {
-          title,
-          updatedAt: updated_at,
-          url,
-        }
-      });
-
-      await cacheClient.set('qiita-blog', articles);
-
+      const articleService = new ArticleService();
+      const qiitaArticles = await articleService.fetchQiitaArticles();
+      const zennArticles = await articleService.fetchZennArticles();
+      const articles = qiitaArticles.concat(zennArticles);
       setQiitaArticles(articles);
     };
     fetchArticles();
   }, []);
-
-  // const [zennArticles, setZennArticles] = useState<Article[] | null>(null);
-
-  // useEffect(() => {
-  //   const client = new HttpClient();
-  //   const cacheClient = new CacheClient();
-  //   const fetchArticles = async () => {
-  //     const cachedArticles = await cacheClient.get<Article[]>('zenn-blog');
-  //     if (cachedArticles) {
-  //       setZennArticles(cachedArticles);
-  //       return;
-  //     }
-
-  //     const response = await client.get<ZennResponse>(process.env.REACT_APP_ZENN_API_ENDPOINT);
-  //     console.log(response);
-  //     if (!response) {
-  //       return;
-  //     }
-  //     const articles = response.articles.map(({ title, body_updated_at, path }) => {
-  //       return {
-  //         title,
-  //         updatedAt: body_updated_at,
-  //         url: `https://zenn.dev${path}`,
-  //       }
-  //     });
-
-  //     await cacheClient.set('zenn-blog', articles);
-
-  //     setZennArticles(articles);
-  //   };
-  //   fetchArticles();
-  // }, []);
 
   return (
     <ThemeProvider theme={theme}>
