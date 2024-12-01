@@ -6,4 +6,4 @@ This product was developed with React.
 
 ## System Architecture
 
-![image](https://github.com/user-attachments/assets/4deaed93-7a37-45a5-9f20-0d16841e56a2)
+![image](https://github.com/user-attachments/assets/c39e3c17-d96e-45b2-ab94-e71f23965aff)
