@@ -11,19 +11,19 @@ import {
 
 export interface BlogProps {
   updatedAt: string;
-  platform: string;
   title: string;
   url: string;
+  tag: string;
 }
 
-export const Blog: React.FC<BlogProps> = ({ updatedAt, platform, title, url }) => {
+export const Blog: React.FC<BlogProps> = ({ updatedAt, title, url, tag }) => {
   const updatedDate = new Date(updatedAt);
   return (
     <Card sx={{ maxWidth: 345, marginTop: 2 }}>
       <CardActionArea href={ url }>
         <CardContent>
           <Stack direction='row' flexWrap='wrap'>
-            <Chip label={ platform } sx={{ marginRight: 1 }} />
+            <Chip label={ tag } sx={{ marginRight: 1 }} />
             <Chip label={ updatedDate.toLocaleDateString() + ' 更新' } />
           </Stack>
           <Typography sx={{ marginTop: 1 }}>

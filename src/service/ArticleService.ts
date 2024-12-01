@@ -1,14 +1,14 @@
 import HttpClient from '../utils/HttpClient';
 import CacheClient from '../utils/CacheClient';
 
-import { Article } from '../types/BlogType';
+import { Article, TaggedArticle } from '../types/BlogType';
 
 export default class ArticleService {
   private httpClient = new HttpClient();
   private cacheClient = new CacheClient();
 
-  public async fetchQiitaArticles(): Promise<Article[]> {
-    const cachedArticles = await this.cacheClient.get<Article[]>('qiita-blog');
+  public async fetchQiitaArticles(): Promise<TaggedArticle[]> {
+    const cachedArticles = await this.cacheClient.get<TaggedArticle[]>('qiita-blog');
     if (cachedArticles) {
       return cachedArticles;
     }
@@ -20,12 +20,19 @@ export default class ArticleService {
       return [];
     }
 
-    await this.cacheClient.set('qiita-blog', response);
-    return response;
+    const taggedArticles = response.map((article) => {
+      return {
+        ...article,
+        tag: 'Qiita',
+      };
+    });
+
+    await this.cacheClient.set('qiita-blog', taggedArticles);
+    return taggedArticles;
   }
 
-  public async fetchZennArticles(): Promise<Article[]> {
-    const cachedArticles = await this.cacheClient.get<Article[]>('zenn-blog');
+  public async fetchZennArticles(): Promise<TaggedArticle[]> {
+    const cachedArticles = await this.cacheClient.get<TaggedArticle[]>('zenn-blog');
     if (cachedArticles) {
       return cachedArticles;
     }
@@ -36,7 +43,15 @@ export default class ArticleService {
     if (!response) {
       return [];
     }
-    await this.cacheClient.set('zenn-blog', response);
-    return response;
+
+    const taggedArticles = response.map((article) => {
+      return {
+        ...article,
+        tag: 'Zenn',
+      };
+    });
+
+    await this.cacheClient.set('zenn-blog', taggedArticles);
+    return taggedArticles;
   }
 }

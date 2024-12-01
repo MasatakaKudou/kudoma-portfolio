@@ -14,7 +14,7 @@ import { skills } from './data/skills';
 
 import ArticleService from './service/ArticleService';
 
-import { Article } from './types/BlogType';
+import { TaggedArticle } from './types/BlogType';
 
 import { Container, Typography, Stack, Divider } from '@mui/material';
 import Image from 'mui-image';
@@ -63,7 +63,7 @@ const theme = createTheme({
 });
 
 function App() {
-  const [articles, setArticles] = useState<Article[] | null>(null);
+  const [articles, setArticles] = useState<TaggedArticle[] | null>(null);
 
   useEffect(() => {
     const fetchArticles = async () => {
@@ -145,13 +145,13 @@ function App() {
           <Stack direction='row' flexWrap='wrap' sx={{ justifyContent: 'space-around' }}>
             {
               articles?.length ?
-              articles.map(({updatedAt, title, url}, index) => (
+              articles.map(({updatedAt, title, url, tag}, index) => (
                 <Blog
                   key={index}
                   updatedAt={updatedAt}
-                  platform='Qiita'
                   title={title}
                   url={url}
+                  tag={tag}
                 />
               )) : <p>Article Loading...</p>
             }
