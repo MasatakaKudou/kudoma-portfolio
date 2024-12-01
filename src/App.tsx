@@ -63,15 +63,20 @@ const theme = createTheme({
 });
 
 function App() {
-  const [qiitaArticles, setQiitaArticles] = useState<Article[] | null>(null);
+  const [articles, setArticles] = useState<Article[] | null>(null);
 
   useEffect(() => {
     const fetchArticles = async () => {
       const articleService = new ArticleService();
       const qiitaArticles = await articleService.fetchQiitaArticles();
       const zennArticles = await articleService.fetchZennArticles();
-      const articles = qiitaArticles.concat(zennArticles);
-      setQiitaArticles(articles);
+      const allArticles = qiitaArticles.concat(zennArticles);
+      const sortedArticles = allArticles.slice().sort((a, b) => {
+        const aDate = new Date(a.updatedAt);
+        const bDate = new Date(b.updatedAt);
+        return bDate.getTime() - aDate.getTime();
+      });
+      setArticles(sortedArticles);
     };
     fetchArticles();
   }, []);
@@ -138,21 +143,9 @@ function App() {
         <MainHeading title='Blog' />
         <Container>
           <Stack direction='row' flexWrap='wrap' sx={{ justifyContent: 'space-around' }}>
-          {/* {
-              zennArticles?.length ?
-              zennArticles.map(({updatedAt, title, url}, index) => (
-                <Blog
-                  key={index}
-                  updatedAt={updatedAt}
-                  platform='Zenn'
-                  title={title}
-                  url={url}
-                />
-              )) : <p>Zenn Loading...</p>
-            } */}
             {
-              qiitaArticles?.length ?
-              qiitaArticles.map(({updatedAt, title, url}, index) => (
+              articles?.length ?
+              articles.map(({updatedAt, title, url}, index) => (
                 <Blog
                   key={index}
                   updatedAt={updatedAt}
@@ -160,7 +153,7 @@ function App() {
                   title={title}
                   url={url}
                 />
-              )) : <p>Qiita Loading...</p>
+              )) : <p>Article Loading...</p>
             }
           </Stack>
         </Container>
