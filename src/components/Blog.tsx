@@ -23,7 +23,14 @@ export const Blog: React.FC<BlogProps> = ({ updatedAt, title, url, tag }) => {
       <CardActionArea href={ url }>
         <CardContent>
           <Stack direction='row' flexWrap='wrap'>
-            <Chip label={ tag } sx={{ marginRight: 1 }} />
+            {
+              tag === 'Qiita' &&
+                <Chip label={ tag } sx={{ marginRight: 1, backgroundColor: '#55C500', color: 'white' }} />
+            }
+            {
+              tag === 'Zenn' &&
+                <Chip label={ tag } sx={{ marginRight: 1, backgroundColor: '#3EA8FF', color: 'black' }} />
+            }
             <Chip label={ updatedDate.toLocaleDateString() + ' 更新' } />
           </Stack>
           <Typography sx={{ marginTop: 1 }}>
