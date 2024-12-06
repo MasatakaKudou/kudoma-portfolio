@@ -6,7 +6,7 @@ interface SmallHeadingProps {
   firstElement?: boolean;
 };
 
-const SmallHeading: React.FC<SmallHeadingProps> = ({ title, firstElement = false }) => {
+export const SmallHeading: React.FC<SmallHeadingProps> = ({ title, firstElement = false }) => {
   if (firstElement) {
     return (
       <Typography variant='h6' sx={{ borderBottom: 1, marginBottom: 1 }}>{ title }</Typography>
@@ -18,5 +18,3 @@ const SmallHeading: React.FC<SmallHeadingProps> = ({ title, firstElement = false
     </Typography>
   );
 };
-  
-export default SmallHeading;

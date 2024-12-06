@@ -17,7 +17,7 @@ const StyledRating = styled(Rating)(({ theme }) => ({
   },
 }));
 
-const Skill: React.FC<SkillProps> = ({ name, description, rating }) => {
+export const Skill: React.FC<SkillProps> = ({ name, description, rating }) => {
   return (
     <Box>
       { name && (<Typography>{name}</Typography>) }
@@ -35,5 +35,3 @@ const Skill: React.FC<SkillProps> = ({ name, description, rating }) => {
     </Box>
   );
 };
-  
-  export default Skill;

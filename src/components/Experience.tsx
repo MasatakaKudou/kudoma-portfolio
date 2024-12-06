@@ -1,7 +1,6 @@
 import React from 'react';
 
-import MediumHeading from './fonts/MediumHeading';
-import SmallHeading from './fonts/SmallHeading';
+import { MediumHeading, SmallHeading } from '../fonts';
 
 import { 
   Container,

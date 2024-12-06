@@ -7,12 +7,10 @@ interface AccountLogoProps {
   name: string;
 }
 
-const AccountLogo: React.FC<AccountLogoProps> = ({src, url, name}) => {
+export const AccountLogo: React.FC<AccountLogoProps> = ({src, url, name}) => {
   return (
     <a href={url} style={{ margin: '5px' }}>
       <Image src={src} alt={name} fit='contain' height={45} width={45} />
     </a>
   );
 };
-  
-export default AccountLogo;

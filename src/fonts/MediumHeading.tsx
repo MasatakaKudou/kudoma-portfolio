@@ -6,7 +6,7 @@ interface MediumHeadingProps {
   underline?: boolean;
 };
 
-const MediumHeading: React.FC<MediumHeadingProps> = ({ title, underline = false }) => {
+export const MediumHeading: React.FC<MediumHeadingProps> = ({ title, underline = false }) => {
   if (underline) {
     return (
       <Typography variant='h5' sx={{ borderBottom: 1, marginTop: 2, marginBottom: 1 }}>
@@ -18,5 +18,3 @@ const MediumHeading: React.FC<MediumHeadingProps> = ({ title, underline = false 
     <Typography variant='h5'>{ title }</Typography>
   );
 };
-  
-export default MediumHeading;

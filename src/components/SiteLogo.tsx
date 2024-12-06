@@ -1,8 +1,8 @@
-import Same from './Same';
+import { Same } from '.';
 
 import { Stack, Typography } from '@mui/material'
 
-const SiteLogo = () => {
+export const SiteLogo = () => {
   return (
     <div>
       <Stack direction='row' alignItems='center'>
@@ -16,5 +16,3 @@ const SiteLogo = () => {
     </div>
   );
 };
-  
-export default SiteLogo;

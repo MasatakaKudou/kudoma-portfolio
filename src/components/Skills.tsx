@@ -1,7 +1,7 @@
 import React from 'react';
 
-import Skill from './Skill';
-import MediumHeading from './fonts/MediumHeading';
+import { Skill } from '.';
+import { MediumHeading } from '../fonts';
 
 import { 
   Container,

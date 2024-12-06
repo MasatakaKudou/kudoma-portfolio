@@ -1,19 +1,18 @@
 import { useState, useEffect } from 'react';
 
-import Skill from './components/Skill';
-import AccountLogo from './components/AccountLogo';
-import SiteLogo from './components/SiteLogo';
-import MainHeading from './components/fonts/MainHeading';
-import MediumHeading from './components/fonts/MediumHeading';
-import { Skills } from './components/Skills';
-import { Experience } from './components/Experience';
-import { Product } from './components/Product';
-import { Blog } from './components/Blog';
-
-import { experiences, skills, products } from './data';
+import { MainHeading, MediumHeading } from './fonts';
+import {
+  AccountLogo,
+  Blog,
+  Experience,
+  Product,
+  SiteLogo,
+  Skill,
+  Skills,
+} from './components';
 import { ArticleService } from './service';
-
 import { TaggedArticle } from './types';
+import { experiences, skills, products } from './data';
 
 import { Container, Typography, Stack, Divider } from '@mui/material';
 import Image from 'mui-image';
