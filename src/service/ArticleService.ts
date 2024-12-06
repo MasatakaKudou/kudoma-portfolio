@@ -1,9 +1,7 @@
-import HttpClient from '../utils/HttpClient';
-import CacheClient from '../utils/CacheClient';
+import { HttpClient, CacheClient } from '../utils';
+import { Article, TaggedArticle } from '../types';
 
-import { Article, TaggedArticle } from '../types/BlogType';
-
-export default class ArticleService {
+export class ArticleService {
   private httpClient = new HttpClient();
   private cacheClient = new CacheClient();
 

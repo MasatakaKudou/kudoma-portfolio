@@ -19,7 +19,7 @@ export const Product: React.FC<ProductProps> = (props) => {
         <CardMedia
           component='img'
           height='150px'
-          image={require('../../src/images/same2.png')}
+          image={require('../images/same.png')}
           alt={ props.title }
           // sx={{ padding: 2 }}
         />

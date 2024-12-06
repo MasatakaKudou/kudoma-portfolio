@@ -1,4 +1,4 @@
-export default class HttpClient {
+export class HttpClient {
   public async get<T>(url: string): Promise<T | undefined> {
     try {
       const response = await fetch(url);

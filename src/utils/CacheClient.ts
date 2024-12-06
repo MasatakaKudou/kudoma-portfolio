@@ -1,11 +1,11 @@
-import HttpClient from "./HttpClient";
+import { HttpClient } from "./HttpClient";
 
 interface CacheGetResponse {
   key: string;
   value: string;
 }
 
-export default class CacheClient {
+export class CacheClient {
   private client: HttpClient;
 
   constructor() {
