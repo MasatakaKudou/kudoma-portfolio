@@ -24,11 +24,7 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
-import meLogo from './images/me.jpg';
-import zennIcon from './images/zenn-icon.svg';
-import qiitaIcon from './images/qiita-icon.png';
-import sdIcon from './images/sd-icon.png';
-import githubIcon from './images/github-icon.png';
+import { githubIcon, meImage, qiitaIcon, sdIcon, zennIcon } from './images';
 
 import './App.css';
 
@@ -86,7 +82,7 @@ function App() {
         <SiteLogo />
         <MainHeading title='About' />
         <Container sx={{ marginTop: 2 }}>
-          <Image src={meLogo} />
+          <Image src={meImage} />
           <MediumHeading title='自己紹介' underline />
           <Typography>
             青森県出身のエンジニア。<br />
