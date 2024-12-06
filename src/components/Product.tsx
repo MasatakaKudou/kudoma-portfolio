@@ -10,6 +10,7 @@ import {
 
 export interface ProductProps {
   title: string;
+  description: string;
 }
 
 export const Product: React.FC<ProductProps> = (props) => {
@@ -21,15 +22,14 @@ export const Product: React.FC<ProductProps> = (props) => {
           height='150px'
           image={require('../images/same.png')}
           alt={ props.title }
-          // sx={{ padding: 2 }}
+          sx={{ padding: 2 }}
         />
         <CardContent>
           <Typography gutterBottom variant="h5" component="div">
             { props.title }
           </Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-            Lizards are a widespread group of squamate reptiles, with over 6,000
-            species, ranging across all continents except Antarctica
+            { props.description }
           </Typography>
         </CardContent>
       </CardActionArea>

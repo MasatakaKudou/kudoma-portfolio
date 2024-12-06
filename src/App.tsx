@@ -130,7 +130,7 @@ function App() {
         <MainHeading title='Products' />
         <Container>
           {products.map((product, index) => (
-            <Product key={index} title={product.title} />
+            <Product key={index} {...product} />
           ))}
         </Container>
         <MainHeading title='Blog' />
