@@ -9,6 +9,7 @@ import {
   CardMedia,
   Chip,
   Typography,
+  useMediaQuery,
 } from '@mui/material';
 
 export interface ProductProps {
@@ -22,8 +23,13 @@ export interface ProductProps {
 }
 
 export const Product: React.FC<ProductProps> = (props) => {
+  const isPC = useMediaQuery("(min-width:768px)");
   return (
-    <Card sx={{ maxWidth: 300, marginTop: 2, padding: 1 }}>
+    <Card sx={{
+      width: isPC ? '30%' : '100%', 
+      marginTop: 2, 
+      padding: 1 
+    }}>
       <CardMedia
         component='img'
         height='150px'

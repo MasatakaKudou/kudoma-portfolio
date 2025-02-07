@@ -128,7 +128,7 @@ function App() {
           <Experience key={index} {...experience} />
         ))}
         <MainHeading title='Products' />
-        <Container>
+        <Container sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around' }}>
           {products.map((product, index) => (
             <Product key={index} {...product} />
           ))}
