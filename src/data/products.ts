@@ -4,6 +4,10 @@ export const products: ProductProps[] = [
   {
     title: 'Kudoma Portfolio',
     description: 'このポートフォリオサイトです。',
+    url: {
+      github: 'https://github.com/MasatakaKudou/kudoma-portfolio'
+      ,product: 'https://www.kudoma.net/'
+    },
     skills: [
       'React'
       ,'TypeScript'

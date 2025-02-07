@@ -2,10 +2,11 @@ import React from 'react';
 
 import {
   Box,
+  Button,
   Card,
+  CardActions,
   CardContent,
   CardMedia,
-  CardActionArea,
   Chip,
   Typography,
 } from '@mui/material';
@@ -13,34 +14,39 @@ import {
 export interface ProductProps {
   title: string;
   description: string;
+  url: {
+    github: string;
+    product: string;
+  };
   skills: string[];
 }
 
 export const Product: React.FC<ProductProps> = (props) => {
   return (
-    <Card sx={{ maxWidth: 300, marginTop: 2 }}>
-      <CardActionArea>
-        <CardMedia
-          component='img'
-          height='150px'
-          image={require('../images/same.png')}
-          alt={ props.title }
-          sx={{ padding: 2 }}
-        />
-        <CardContent>
-          <Typography gutterBottom variant="h5" component="div">
-            { props.title }
-          </Typography>
-          <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-            { props.description }
-          </Typography>
-          <Box marginTop={1}>
-            {props.skills.map((skill, index) => (
-              <Chip label={skill} sx={{ marginRight: 1, marginBottom: 1 }} />
-            ))}
-          </Box>
-        </CardContent>
-      </CardActionArea>
+    <Card sx={{ maxWidth: 300, marginTop: 2, padding: 1 }}>
+      <CardMedia
+        component='img'
+        height='150px'
+        image={require('../images/same.png')}
+        alt={ props.title }
+      />
+      <CardContent>
+        <Typography gutterBottom variant="h5" component="div">
+          { props.title }
+        </Typography>
+        <Typography variant="body2">
+          { props.description }
+        </Typography>
+        <Box sx={{ marginTop: 2 }}>
+          {props.skills.map((skill, index) => (
+            <Chip label={skill} sx={{ marginRight: 1, marginTop: 1 }} />
+          ))}
+        </Box>
+      </CardContent>
+      <CardActions sx={{ marginBottom: 1, paddingX: 2 }} >
+        <Button variant="contained" size="small" href={props.url.github} target='blank'>Github</Button>
+        <Button variant="contained" size="small" href={props.url.product} target='blank'>Product</Button>
+      </CardActions>
     </Card>
   );
 }
