@@ -81,7 +81,7 @@ function App() {
         <SiteLogo />
         <MainHeading title='About' />
         <Container sx={{ marginTop: 2 }}>
-          <Image src={meImage} width='100%' height='100%' />
+          <Image src={meImage} style={{ maxWidth: 400 }} />
           <MediumHeading title='自己紹介' underline />
           <Typography>
             青森県出身のエンジニア。<br />
