@@ -48,7 +48,7 @@ const theme = createTheme({
     MuiTypography: {
       styleOverrides: {
         h2: {
-          color: '#00aaff',
+          color: '#0074ae',
         }
       }
     }

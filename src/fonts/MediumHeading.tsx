@@ -9,12 +9,12 @@ interface MediumHeadingProps {
 export const MediumHeading: React.FC<MediumHeadingProps> = ({ title, underline = false }) => {
   if (underline) {
     return (
-      <Typography variant='h5' sx={{ borderBottom: 1, marginTop: 2, marginBottom: 1 }}>
+      <Typography component='h4' variant='h5' sx={{ borderBottom: 1, marginTop: 2, marginBottom: 1 }}>
         {title}
       </Typography>
     );
   }
   return (
-    <Typography variant='h5'>{ title }</Typography>
+    <Typography component='h4' variant='h5'>{ title }</Typography>
   );
 };

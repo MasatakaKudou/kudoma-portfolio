@@ -9,11 +9,11 @@ interface SmallHeadingProps {
 export const SmallHeading: React.FC<SmallHeadingProps> = ({ title, firstElement = false }) => {
   if (firstElement) {
     return (
-      <Typography variant='h6' sx={{ borderBottom: 1, marginBottom: 1 }}>{ title }</Typography>
+      <Typography component='h5' variant='h6' sx={{ borderBottom: 1, marginBottom: 1 }}>{ title }</Typography>
     );
   }
   return (
-    <Typography variant='h6' sx={{ borderBottom: 1, marginTop: 2, marginBottom: 1 }}>
+    <Typography component='h5' variant='h6' sx={{ borderBottom: 1, marginTop: 2, marginBottom: 1 }}>
       { title }
     </Typography>
   );
