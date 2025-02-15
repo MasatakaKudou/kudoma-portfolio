@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Helmet } from 'react-helmet';
 
 import { MainHeading, MediumHeading } from './fonts';
 import {
@@ -81,6 +82,9 @@ function App() {
         <SiteLogo />
         <MainHeading title='About' />
         <Container sx={{ marginTop: 2 }}>
+          <Helmet>
+            <link rel='preload' as='image' href={meImage} />
+          </Helmet>
           <Image src={meImage} style={{ maxWidth: 400 }} />
           <MediumHeading title='自己紹介' underline />
           <Typography>
