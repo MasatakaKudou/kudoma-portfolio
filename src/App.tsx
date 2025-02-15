@@ -30,7 +30,7 @@ import './App.css';
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#0077be', // 海の青をイメージ
+      main: '#0074ae', // 海の青をイメージ
     },
     secondary: {
       main: '#00aaff', // 水色
@@ -41,7 +41,7 @@ const theme = createTheme({
     },
     text: {
       primary: '#004d66', // 濃い青
-      secondary: '#0077be', // 海の青に合わせた色
+      secondary: '#0074ae', // 海の青に合わせた色
     },
   },
   components: {
