@@ -1,1 +1,1 @@
-export type { Article, TaggedArticle } from './BlogType';
+export type { Article, Site, TaggedArticle } from './BlogType';

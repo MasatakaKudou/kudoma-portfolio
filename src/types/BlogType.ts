@@ -1,3 +1,5 @@
+export type Site = "qiita" | "zenn" | "kudoma";
+
 export interface Article {
   title: string;
   updatedAt: string;
