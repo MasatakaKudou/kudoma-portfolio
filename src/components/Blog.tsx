@@ -31,6 +31,10 @@ export const Blog: React.FC<BlogProps> = ({ updatedAt, title, url, tag }) => {
               tag === 'Zenn' &&
                 <Chip label={ tag } sx={{ marginRight: 1, backgroundColor: '#3EA8FF', color: 'black' }} />
             }
+            {
+              tag === 'Kudoma' &&
+                <Chip label={ tag } sx={{ marginRight: 1, backgroundColor: '#E53935', color: 'white' }} />
+            }
             <Chip label={ updatedDate.toLocaleDateString() + ' 更新' } />
           </Stack>
           <Typography sx={{ marginTop: 1 }}>

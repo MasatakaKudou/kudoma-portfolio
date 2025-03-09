@@ -64,7 +64,8 @@ function App() {
       const articleService = new ArticleService();
       const qiitaArticles = await articleService.fetchArticles('qiita');
       const zennArticles = await articleService.fetchArticles('zenn');
-      const allArticles = qiitaArticles.concat(zennArticles);
+      const kudomaArticles = await articleService.fetchArticles('kudoma');
+      const allArticles = qiitaArticles.concat(zennArticles).concat(kudomaArticles);
       const sortedArticles = allArticles.slice().sort((a, b) => {
         const aDate = new Date(a.updatedAt);
         const bDate = new Date(b.updatedAt);

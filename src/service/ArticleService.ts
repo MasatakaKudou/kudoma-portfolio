@@ -10,7 +10,7 @@ export class ArticleService {
     if (cachedArticles) {
       return cachedArticles;
     }
-
+  
     const baseUrl = new URL(process.env.REACT_APP_ARTICLE_BASE_URL);
     baseUrl.pathname = `/articles/${siteName}`;
     const response = await this.httpClient.get<Article[]>(baseUrl.toString());
