@@ -3,17 +3,20 @@ name: Deploy React App to GitHub Pages
 on:
   push:
     branches:
-      - main  # メインブランチにpushしたら実行
+      - main
+  workflow_dispatch:
 
 permissions:
-  contents: write  # GitHub Pagesへデプロイするために必要
+  contents: read
+  pages: write
+  id-token: write
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: レポジトリのチェックアウト
+      - name: リポジトリのチェックアウト
         uses: actions/checkout@v4
 
       - name: Node.jsのセットアップ
@@ -23,14 +26,29 @@ jobs:
           cache: npm
 
       - name: 依存関係のインストール
-        run: npm install
+        run: npm ci
 
       - name: Reactアプリのビルド
         run: npm run build
 
-      - name: GitHub Pagesへデプロイ
-        uses: peaceiris/actions-gh-pages@v4
+      - name: GitHub Pages 用に dist をセットアップ
+        run: |
+          mkdir -p public
+          cp -r build/* public/
+
+      - name: GitHub Pages アーティファクトのアップロード
+        uses: actions/upload-pages-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./build
-          publish_branch: gh-pages
+          path: public
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: GitHub Pages へデプロイ
+        id: deployment
+        uses: actions/deploy-pages@v4
