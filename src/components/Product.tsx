@@ -16,7 +16,7 @@ export interface ProductProps {
   title: string;
   description: string;
   url: {
-    github: string;
+    github?: string;
     product: string;
   };
   skills: string[];
@@ -50,7 +50,10 @@ export const Product: React.FC<ProductProps> = (props) => {
         </Box>
       </CardContent>
       <CardActions sx={{ marginBottom: 1, paddingX: 2 }} >
-        <Button variant="contained" size="small" href={props.url.github} target='blank'>Github</Button>
+        {
+          props.url.github &&
+            <Button variant="contained" size="small" href={props.url.github} target='blank'>Github</Button>
+        }
         <Button variant="contained" size="small" href={props.url.product} target='blank'>Product</Button>
       </CardActions>
     </Card>
