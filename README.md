@@ -6,4 +6,4 @@ This product was developed with React.
 
 ## System Architecture
 
-![image](https://github.com/user-attachments/assets/b015eedd-9d10-4275-9f51-3903dda41348)
+![kudoma-portfolio drawio (1)](https://github.com/user-attachments/assets/0bdbfcc1-2df0-4757-a7ec-5c77280fea5e)
