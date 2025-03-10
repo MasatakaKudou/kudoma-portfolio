@@ -158,6 +158,7 @@ function App() {
         <Divider sx={{ marginTop: 5, borderColor: 'primary.main' }} />
         <Typography color={ theme.palette.text.secondary } sx={{ marginTop: 1, textAlign: 'center' }}>Kudoma Portfolio</Typography>
       </Container>
+      <p>deploy test</p>
     </ThemeProvider>
   );
 }
