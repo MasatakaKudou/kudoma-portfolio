@@ -1,0 +1,36 @@
+name: Deploy React App to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main  # メインブランチにpushしたら実行
+
+permissions:
+  contents: write  # GitHub Pagesへデプロイするために必要
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: レポジトリのチェックアウト
+        uses: actions/checkout@v4
+
+      - name: Node.jsのセットアップ
+        uses: actions/setup-node@v4
+        with:
+          node-version: v20.8.1
+          cache: npm
+
+      - name: 依存関係のインストール
+        run: npm install
+
+      - name: Reactアプリのビルド
+        run: npm run build
+
+      - name: GitHub Pagesへデプロイ
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build
+          publish_branch: gh-pages
