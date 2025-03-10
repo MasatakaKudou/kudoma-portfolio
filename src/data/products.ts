@@ -12,6 +12,7 @@ export const products: ProductProps[] = [
       'React'
       ,'TypeScript'
       ,'Github Pages'
+      ,'Github Actions'
       ,'Cloudflare'
       ,'Redis'
     ],
