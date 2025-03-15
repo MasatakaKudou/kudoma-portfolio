@@ -29,7 +29,7 @@ export const Blog: React.FC<BlogProps> = ({ updatedAt, title, url, tag }) => {
             }
             {
               tag === 'Zenn' &&
-                <Chip label={ tag } sx={{ marginRight: 1, backgroundColor: '#3EA8FF', color: 'black' }} />
+                <Chip label={ tag } sx={{ marginRight: 1, backgroundColor: '#3EA8FF', color: 'white' }} />
             }
             {
               tag === 'Kudoma' &&
