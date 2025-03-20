@@ -62,10 +62,13 @@ function App() {
   useEffect(() => {
     const fetchArticles = async () => {
       const articleService = new ArticleService();
-      const qiitaArticles = await articleService.fetchArticles('qiita');
-      const zennArticles = await articleService.fetchArticles('zenn');
-      const kudomaArticles = await articleService.fetchArticles('kudoma');
-      const allArticles = qiitaArticles.concat(zennArticles).concat(kudomaArticles);
+
+      const [qiita, zenn, kudoma] = await Promise.all([
+        articleService.fetchArticles('qiita'),
+        articleService.fetchArticles('zenn'),
+        articleService.fetchArticles('kudoma')
+      ]);
+      const allArticles = [...qiita, ...zenn, ...kudoma];
       const sortedArticles = allArticles.slice().sort((a, b) => {
         const aDate = new Date(a.updatedAt);
         const bDate = new Date(b.updatedAt);
