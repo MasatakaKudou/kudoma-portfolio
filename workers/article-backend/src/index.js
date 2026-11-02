@@ -9,14 +9,6 @@ export default {
       return handleOptionsRequest(headers);
     }
 
-    // Temporary endpoint to verify automatic deployment. Change the message and redeploy to confirm.
-    if (path === "/ping") {
-      return new Response(JSON.stringify({ message: "pong v2" }), {
-        status: 200,
-        headers,
-      });
-    }
-
     if (path === "/articles/qiita") {
       const json = await fetchReponse(env.QIITA_API_ENDPOINT);
       const articles = json.map(({ title, updated_at, url }) => {
