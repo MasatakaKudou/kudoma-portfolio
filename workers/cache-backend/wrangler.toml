@@ -1,7 +1,6 @@
 name = "kudoma-portfolio-cache-backend"
 main = "src/index.js"
-# TODO: confirm against the Compatibility date shown in the Cloudflare dashboard (Settings) before deploying.
-compatibility_date = "2024-12-01"
+compatibility_date = "2024-09-18"
 
 # Keep the variables/secrets set in the Cloudflare dashboard
 # (REDIS_REST_URL, REDIS_REST_TOKEN).
