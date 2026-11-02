@@ -13,7 +13,7 @@ import {
 import { alpha } from '../theme';
 import { GitHub as GitHubIcon, Launch as LaunchIcon } from '@mui/icons-material';
 
-import { Same } from '.';
+import { NewTabNote, Same } from '.';
 import { elevation, ocean } from '../theme';
 
 export interface ProductProps {
@@ -102,6 +102,7 @@ export const Product: React.FC<ProductProps> = ({ title, description, url, skill
           rel="noopener noreferrer"
         >
           GitHub
+          <NewTabNote />
         </Button>
       )}
       <Button
@@ -114,6 +115,7 @@ export const Product: React.FC<ProductProps> = ({ title, description, url, skill
         rel="noopener noreferrer"
       >
         Product
+        <NewTabNote />
       </Button>
     </CardActions>
   </Card>

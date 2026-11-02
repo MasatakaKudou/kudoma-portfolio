@@ -17,6 +17,7 @@ import {
   Product,
   Section,
   SectionNav,
+  SkipLink,
   Skill,
   Skills,
 } from './components';
@@ -77,10 +78,11 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
+      <SkipLink targetId="main" />
       <Hero />
       <SectionNav items={NAV_ITEMS} />
 
-      <Box component="main">
+      <Box component="main" id="main" tabIndex={-1} sx={{ outline: 'none' }}>
         <Section id="about" title="About">
           <About />
         </Section>

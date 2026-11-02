@@ -30,7 +30,7 @@ export const BlogList: React.FC<BlogListProps> = ({ articles }) => {
 
   if (!articles) {
     return (
-      <Box sx={grid}>
+      <Box sx={grid} aria-busy>
         {Array.from({ length: SKELETON_COUNT }, (_, i) => (
           <BlogSkeleton key={i} />
         ))}
@@ -41,7 +41,7 @@ export const BlogList: React.FC<BlogListProps> = ({ articles }) => {
   if (articles.length === 0) {
     return (
       <Container disableGutters>
-        <Typography sx={{ color: alpha(ocean.deep, 0.7) }}>記事を取得できませんでした。</Typography>
+        <Typography role="status" sx={{ color: alpha(ocean.deep, 0.7) }}>記事を取得できませんでした。</Typography>
       </Container>
     );
   }

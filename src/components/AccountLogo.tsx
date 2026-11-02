@@ -1,9 +1,11 @@
 import React from 'react';
 
 import { Box, Tooltip } from '@mui/material';
+import { visuallyHidden } from '@mui/utils';
 import { alpha } from '../theme';
 
 import { elevation, ocean } from '../theme';
+import { NewTabNote } from './NewTabNote';
 
 interface AccountLogoProps {
   src: string;
@@ -19,7 +21,6 @@ export const AccountLogo: React.FC<AccountLogoProps> = ({ src, url, name }) => (
       href={url}
       target="_blank"
       rel="noopener noreferrer"
-      aria-label={name}
       sx={{
         display: 'grid',
         placeItems: 'center',
@@ -38,6 +39,10 @@ export const AccountLogo: React.FC<AccountLogoProps> = ({ src, url, name }) => (
       }}
     >
       <Box component="img" src={src} alt="" aria-hidden sx={{ width: 28, height: 28, objectFit: 'contain' }} />
+      <Box component="span" sx={visuallyHidden}>
+        {name}
+      </Box>
+      <NewTabNote />
     </Box>
   </Tooltip>
 );

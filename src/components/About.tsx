@@ -53,10 +53,13 @@ export const About = () => (
         component="img"
         src={meImage}
         alt="堤防で釣りの仕掛けを準備している様子"
+        width={900}
+        height={900}
         sx={{
           position: 'relative',
           display: 'block',
           width: '100%',
+          height: 'auto',
           aspectRatio: '1 / 1',
           objectFit: 'cover',
           borderRadius: 4,
