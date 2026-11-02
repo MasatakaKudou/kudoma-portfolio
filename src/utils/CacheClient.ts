@@ -32,8 +32,7 @@ export class CacheClient {
 
     const valueForRequestBody = JSON.stringify(value);
     try {
-      await this.client.post(endpoint.toString(), { key, value: valueForRequestBody });
-      return true;
+      return await this.client.post(endpoint.toString(), { key, value: valueForRequestBody });
     } catch (error) {
       console.error(`Failed to set cache - key: ${key}, value: ${value}, error: ${error}`);
       return false;
