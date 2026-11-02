@@ -25,5 +25,9 @@ npx wrangler@4 deploy
 
 ## Deploy (GitHub Actions)
 
-`.github/workflows/deploy-workers.yml` deploys a Worker when its directory changes on `main` (or via manual run).
-It needs two repository secrets: `CLOUDFLARE_API_TOKEN` (scoped to editing Workers only) and `CLOUDFLARE_ACCOUNT_ID`.
+Each Worker has its own workflow that deploys it when its directory changes on `main` (or via manual run):
+
+- `.github/workflows/deploy-article-backend.yml` (token: `CLOUDFLARE_API_TOKEN`)
+- `.github/workflows/deploy-cache-backend.yml` (token: `CLOUDFLARE_API_TOKEN_CACHE`)
+
+Repository secrets: one API token per Worker (scoped to editing that Worker only) and the shared `CLOUDFLARE_ACCOUNT_ID`.
