@@ -25,6 +25,11 @@ export class ArticleService {
       };
     });
 
+    // 注意（ネガティブキャッシュ）: 記事 API は上流が失敗しても 200 で `[]` を返し、
+    // その空の結果もキャッシュされる（TTL は 1 時間、キャッシュ Worker 側で設定）。
+    // 障害中の上流へ負荷をかけ続けないための意図的な挙動だが、TTL が切れるまでは
+    // その媒体の記事が表示されなくなる。
+    // 今後の改善案: 上流の失敗による空の結果はキャッシュしない、または短い TTL にする。
     await this.cacheClient.set(`${siteName}-blog`, taggedArticles);
     return taggedArticles;
   }
