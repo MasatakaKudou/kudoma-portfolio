@@ -6,8 +6,18 @@ const ALLOWED_ORIGINS = [
   "http://localhost:3000",
 ];
 
+interface Env {
+  REDIS_REST_URL: string;
+  REDIS_REST_TOKEN: string;
+}
+
+interface SetRequestBody {
+  key?: string;
+  value?: string;
+}
+
 export default {
-  async fetch(request, env) {
+  async fetch(request: Request, env: Env): Promise<Response> {
     const redisUrl = env.REDIS_REST_URL;
     const redisToken = env.REDIS_REST_TOKEN;
 
@@ -16,10 +26,11 @@ export default {
 
     const headers = buildHeaders();
     const origin = request.headers.get("Origin");
-    const isAllowedOrigin = ALLOWED_ORIGINS.includes(origin);
+    // The request's Origin when it is on the allow list, otherwise null.
+    const allowedOrigin = origin !== null && ALLOWED_ORIGINS.includes(origin) ? origin : null;
 
     if (request.method === "OPTIONS") {
-      return handleOptionsRequest(headers, origin, isAllowedOrigin);
+      return handleOptionsRequest(headers, allowedOrigin);
     }
 
     if (path === "/get") {
@@ -44,16 +55,16 @@ export default {
     
     if (path === "/set") {
       // Writes are only accepted from the allowed origins.
-      if (!isAllowedOrigin) {
+      if (allowedOrigin === null) {
         return new Response("Forbidden", { status: 403 });
       }
-      headers.set("Access-Control-Allow-Origin", origin);
+      headers.set("Access-Control-Allow-Origin", allowedOrigin);
       headers.set("Vary", "Origin");
 
       // SETリクエストの処理
-      let body;
+      let body: SetRequestBody | null;
       try {
-        body = await request.json();
+        body = await request.json<SetRequestBody | null>();
       } catch (e) {
         return new Response("Invalid JSON", { status: 400, headers });
       }
@@ -78,10 +89,10 @@ export default {
   },
 };
 
-function handleOptionsRequest(headers, origin, isAllowedOrigin) {
+function handleOptionsRequest(headers: Headers, allowedOrigin: string | null): Response {
   // Preflight is only approved for the allowed origins.
-  if (isAllowedOrigin) {
-    headers.set("Access-Control-Allow-Origin", origin);
+  if (allowedOrigin !== null) {
+    headers.set("Access-Control-Allow-Origin", allowedOrigin);
   } else {
     headers.delete("Access-Control-Allow-Origin");
   }
@@ -91,7 +102,12 @@ function handleOptionsRequest(headers, origin, isAllowedOrigin) {
   return new Response(null, { status: 204, headers });
 }
 
-async function getCache(url, token, key) {
+interface CacheResult {
+  ok: boolean;
+  result?: string | null;
+}
+
+async function getCache(url: string, token: string, key: string): Promise<CacheResult> {
   const response = await fetch(`${url}/get/${key}`, {
     method: "GET",
     headers: {
@@ -102,11 +118,11 @@ async function getCache(url, token, key) {
     return { ok: false };
   }
 
-  const data = await response.json();
+  const data = await response.json<{ result: string | null }>();
   return { ok: true, result: data.result };
 }
 
-async function setCache(url, token, key, value, ttl=3600) {
+async function setCache(url: string, token: string, key: string, value: string, ttl = 3600): Promise<boolean> {
   const response = await fetch(`${url}/set/${key}?EX=${ttl}`, {
     method: "POST",
     headers: {
@@ -122,7 +138,7 @@ async function setCache(url, token, key, value, ttl=3600) {
   return true;
 }
 
-function buildHeaders() {
+function buildHeaders(): Headers {
   const headers = new Headers();
   headers.set('Access-Control-Allow-Origin', '*');
   return headers;
