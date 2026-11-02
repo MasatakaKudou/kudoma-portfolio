@@ -20,3 +20,8 @@ npx wrangler@4 login          # first time only
 npx wrangler@4 deploy --dry-run   # check what would be deployed
 npx wrangler@4 deploy
 ```
+
+## Deploy (GitHub Actions)
+
+`.github/workflows/deploy-workers.yml` deploys a Worker when its directory changes on `main` (or via manual run).
+It needs two repository secrets: `CLOUDFLARE_API_TOKEN` (scoped to editing Workers only) and `CLOUDFLARE_ACCOUNT_ID`.
