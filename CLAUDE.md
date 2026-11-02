@@ -27,9 +27,9 @@ Single-page personal portfolio (React 18 + TypeScript + MUI/Emotion) at www.kudo
 
 - `src/App.tsx` composes the page from `src/components/*` sections. Static content (experiences, products, skills) lives in `src/data/*` and is typed by the props of the corresponding component — edit data there rather than in components.
 - `src/theme.ts` holds the MUI theme and shared design tokens (`ocean`, `elevation`, …) imported directly by components.
-- **Blog articles** are the only dynamic data. `App.tsx` calls `ArticleService.fetchArticles` for each `Site` (`qiita | zenn | kudoma`, see `src/types/BlogType.ts`). The service first checks the cache via `CacheClient` (key `<site>-blog`), and on a miss fetches `<REACT_APP_ARTICLE_BASE_URL>/articles/<site>`, tags each article with the capitalized site name, and writes back to the cache. `Blog.tsx` maps tag → brand color (`TAG_COLORS`), so adding a new `Site` means updating the type, `App.tsx`, the Worker, and that map.
-- `HttpClient` swallows errors and returns `undefined`/`false` (logging via `console.error`), so callers treat a missing result as "not found" rather than catching exceptions. A cache miss therefore logs a 404 error in the console; that is expected (the cache TTL is 1 hour).
-- Upstream failures are deliberately cached as an empty list (negative cache) — see the comments in `ArticleService.ts` and `workers/article-backend/src/index.ts` before changing this.
+- **Blog articles** are the only dynamic data. `App.tsx` calls `ArticleService.fetchArticles` for each `Site` (`qiita | zenn | kudoma`, see `src/types/BlogType.ts`). The service fetches `<REACT_APP_ARTICLE_BASE_URL>/articles/<site>` and tags each article with the capitalized site name. Caching is done server-side by `article-backend` (Upstash Redis), not by the browser. `Blog.tsx` maps tag → brand color (`TAG_COLORS`), so adding a new `Site` means updating the type, `App.tsx`, the Worker, and that map.
+- `HttpClient` swallows errors and returns `undefined` (logging via `console.error`), so callers treat a missing result as "not found" rather than catching exceptions.
+- Upstream failures are cached by `article-backend` as an empty list for only 60 seconds (successes for 1 hour) — see `workers/article-backend/src/index.ts` before changing this.
 
 ### Workers (`workers/`)
 
@@ -53,4 +53,4 @@ Merging to `main` deploys automatically:
 
 ## Environment
 
-`.env` (committed to the repo) defines `REACT_ENV`, `REACT_APP_ARTICLE_BASE_URL`, and `REACT_APP_CACHE_BASE_URL`. These are inlined at build time by CRA; `jest.setup.js` loads them via dotenv. `tests/utils/CacheClient.spec.ts` mocks `fetch`, so tests make no network calls.
+`.env` (committed to the repo) defines `REACT_ENV` and `REACT_APP_ARTICLE_BASE_URL`. These are inlined at build time by CRA; `jest.setup.js` loads them via dotenv. `tests/service/ArticleService.spec.ts` mocks `fetch`, so tests make no network calls.
