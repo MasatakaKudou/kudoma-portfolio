@@ -1,22 +1,22 @@
-name: Deploy Workers
+name: Deploy cache-backend
 
 on:
   push:
     branches:
       - main
     paths:
-      - 'workers/article-backend/**'
+      - 'workers/cache-backend/**'
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: deploy-workers
+  group: deploy-cache-backend
   cancel-in-progress: false
 
 jobs:
-  deploy-article-backend:
+  deploy-cache-backend:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -25,9 +25,9 @@ jobs:
         with:
           node-version-file: .node-version
 
-      - name: Deploy kudoma-portfolio-article-backend
-        working-directory: workers/article-backend
+      - name: Deploy kudoma-portfolio-cache-backend
+        working-directory: workers/cache-backend
         run: npx wrangler@4.156.2 deploy
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN_CACHE }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
