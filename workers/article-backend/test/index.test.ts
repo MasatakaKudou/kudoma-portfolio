@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { afterEach, beforeEach, describe, test } from "node:test";
+import { afterEach, beforeEach, describe, mock, test } from "node:test";
 
 import worker from "../src/index.ts";
 
@@ -9,7 +9,7 @@ const ENV = {
   KUDOMA_API_ENDPOINT: "https://upstream.test/kudoma",
 };
 const REDIS = "https://redis.test";
-const ENV_WITH_REDIS = { ...ENV, REDIS_REST_URL: REDIS, REDIS_REST_TOKEN: "secret" };
+const ENV_WITH_REDIS = { ...ENV, UPSTASH_REDIS_REST_URL: REDIS, UPSTASH_REDIS_REST_TOKEN: "secret" };
 
 const QIITA = [{ title: "q", updated_at: "2026-01-01", url: "https://qiita.com/a" }];
 const ZENN = { articles: [{ title: "z", body_updated_at: "2026-02-02", path: "/u/articles/1" }] };
@@ -154,9 +154,41 @@ describe("cache", () => {
     assert.equal((await res.json() as unknown[]).length, 1);
   });
 
-  test("without the Redis vars it works and never calls Redis", async () => {
-    const res = await call("/articles/qiita");
-    assert.equal(res.status, 200);
-    assert.equal(redisCalls("get").length + redisCalls("set").length, 0);
+  test("without the Redis vars it works, never calls Redis and warns", async () => {
+    const warn = mock.method(console, "warn", () => {});
+    try {
+      const res = await call("/articles/qiita");
+      assert.equal(res.status, 200);
+      assert.equal(redisCalls("get").length + redisCalls("set").length, 0);
+      assert.match(String(warn.mock.calls[0]?.arguments[0]), /UPSTASH_REDIS_REST_URL/);
+    } finally {
+      warn.mock.restore();
+    }
+  });
+
+  test("a misnamed variable (the old REDIS_REST_* names) is treated as not configured", async () => {
+    const warn = mock.method(console, "warn", () => {});
+    try {
+      await call("/articles/qiita", { ...ENV, REDIS_REST_URL: REDIS, REDIS_REST_TOKEN: "secret" });
+      assert.equal(redisCalls("get").length, 0);
+      assert.equal(warn.mock.calls.length > 0, true);
+    } finally {
+      warn.mock.restore();
+    }
+  });
+
+  test("failed Redis reads and writes are logged with their status", async () => {
+    handlers.redisGet = () => new Response("no", { status: 401 });
+    handlers.redisSet = () => new Response("no", { status: 403 });
+    const error = mock.method(console, "error", () => {});
+    try {
+      const res = await call("/articles/qiita", ENV_WITH_REDIS);
+      assert.equal(res.status, 200);
+      const messages = error.mock.calls.map((c) => String(c.arguments[0]));
+      assert.ok(messages.includes("Failed to read cache: 401"), messages.join("|"));
+      assert.ok(messages.includes("Failed to write cache: 403"), messages.join("|"));
+    } finally {
+      error.mock.restore();
+    }
   });
 });

@@ -36,7 +36,7 @@ Single-page personal portfolio (React 18 + TypeScript + MUI/Emotion) at www.kudo
 Source of the API `REACT_APP_ARTICLE_BASE_URL` points to. TypeScript, bundled by `wrangler` (no build step); see `workers/README.md`.
 
 - `article-backend` — `GET /articles/{qiita,zenn,kudoma}`; fetches the upstream APIs (URLs come from dashboard env vars) and normalizes them to `{title, updatedAt, url}`. It also owns the cache: a read-through cache in Upstash Redis (key `articles:<site>`, 1 hour on success, 60 seconds on an upstream failure), written only by the Worker itself, so there is no public write endpoint. Without the Redis vars it just does not cache. Adding a new `Site` means adding it to `SOURCES` in the Worker.
-- `wrangler.toml` sets `keep_vars = true`: env vars and secrets (`QIITA_API_ENDPOINT`, …, `REDIS_REST_URL`, `REDIS_REST_TOKEN`) live in the Cloudflare dashboard, not in the repo. Do not remove it, or a deploy would wipe them. `compatibility_date` is pinned to the deployed value per Worker.
+- `wrangler.toml` sets `keep_vars = true`: env vars and secrets (`QIITA_API_ENDPOINT`, …, `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`) live in the Cloudflare dashboard, not in the repo. Do not remove it, or a deploy would wipe them. `compatibility_date` is pinned to the deployed value per Worker.
 
 ### CI/CD (`.github/workflows/`)
 
