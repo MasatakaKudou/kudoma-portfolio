@@ -18,7 +18,10 @@ export default {
         return new Response("Key is required", { status: 400, headers });
       }
       
-      const cache = await getCache(redisUrl, redisToken, key);
+      const { ok, result: cache } = await getCache(redisUrl, redisToken, key);
+      if (!ok) {
+        return new Response("Failed to fetch data from Upstash", { status: 502, headers });
+      }
       if (!cache) {
         return new Response("Not Found", { status: 404, headers});
       }
@@ -31,7 +34,13 @@ export default {
     
     if (path === "/set") {
       // SETリクエストの処理
-      const { key, value } = await request.json();
+      let body;
+      try {
+        body = await request.json();
+      } catch (e) {
+        return new Response("Invalid JSON", { status: 400, headers });
+      }
+      const { key, value } = body ?? {};
 
       if (!key) {
         return new Response("Key is required", { status: 400, headers });
@@ -42,7 +51,7 @@ export default {
 
       const isSuccess = await setCache(redisUrl, redisToken, key, value);
       if (!isSuccess) {
-        new Response("Failed to save data to Upstash", { status: 500, headers });
+        return new Response("Failed to save data to Upstash", { status: 500, headers });
       }
 
       return new Response("Data saved to Upstash", { status: 200, headers });
@@ -59,8 +68,6 @@ function handleOptionsRequest(headers) {
 }
 
 async function getCache(url, token, key) {
-  const headers = buildHeaders();
-
   const response = await fetch(`${url}/get/${key}`, {
     method: "GET",
     headers: {
@@ -68,11 +75,11 @@ async function getCache(url, token, key) {
     },
   });
   if (!response.ok) {
-    return new Response("Failed to fetch data from Upstash", { status: 500, headers });
+    return { ok: false };
   }
 
   const data = await response.json();
-  return data.result;
+  return { ok: true, result: data.result };
 }
 
 async function setCache(url, token, key, value, ttl=3600) {
