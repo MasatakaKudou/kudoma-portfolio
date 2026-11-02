@@ -2,6 +2,15 @@ interface Env {
   QIITA_API_ENDPOINT: string;
   ZENN_API_ENDPOINT: string;
   KUDOMA_API_ENDPOINT: string;
+  // Upstash Redis (REST). Optional: without them the Worker works, just without caching.
+  REDIS_REST_URL?: string;
+  REDIS_REST_TOKEN?: string;
+}
+
+interface Article {
+  title: string;
+  updatedAt: string;
+  url: string;
 }
 
 interface QiitaItem {
@@ -20,92 +29,142 @@ interface KudomaPost {
   link: string;
 }
 
-export default {
-  async fetch(request: Request, env: Env): Promise<Response> {
-    const url = new URL(request.url);
-    const path = url.pathname;
+interface Source {
+  /** Where to fetch from (the URL is an env var set in the Cloudflare dashboard). */
+  endpoint: (env: Env) => string;
+  /** Normalizes the upstream response. */
+  normalize: (json: unknown) => Article[];
+}
 
+// Add a new site here (and to `Site` in the site's src/types/BlogType.ts).
+const SOURCES: Record<string, Source> = {
+  qiita: {
+    endpoint: (env) => env.QIITA_API_ENDPOINT,
+    normalize: (json) =>
+      (json as QiitaItem[]).map(({ title, updated_at, url }) => ({
+        title,
+        updatedAt: updated_at,
+        url,
+      })),
+  },
+  zenn: {
+    endpoint: (env) => env.ZENN_API_ENDPOINT,
+    normalize: (json) =>
+      ((json as ZennResponse).articles ?? []).map(({ title, body_updated_at, path }) => ({
+        title,
+        updatedAt: body_updated_at,
+        url: `https://zenn.dev${path}`,
+      })),
+  },
+  kudoma: {
+    endpoint: (env) => env.KUDOMA_API_ENDPOINT,
+    normalize: (json) =>
+      (json as KudomaPost[]).map(({ title, date, link }) => ({
+        title: title.rendered,
+        updatedAt: date,
+        url: link,
+      })),
+  },
+};
+
+// A successful result is cached for an hour.
+const CACHE_TTL_SECONDS = 3600;
+// An upstream failure is cached briefly, so a down upstream is not hit on every visit
+// but the articles come back soon after it recovers.
+const FAILURE_TTL_SECONDS = 60;
+
+export default {
+  async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+    const url = new URL(request.url);
     const headers = buildHeaders();
 
     if (request.method === "OPTIONS") {
       return handleOptionsRequest(headers);
     }
 
-    if (path === "/articles/qiita") {
-      const json = (await fetchJson<QiitaItem[]>(env.QIITA_API_ENDPOINT)) ?? [];
-      const articles = json.map(({ title, updated_at, url }) => {
-        return {
-          title,
-          updatedAt: updated_at,
-          url,
-        }
-      });
-
-      return new Response(JSON.stringify(articles), {
-        status: 200,
-        headers,
-      });
+    const match = url.pathname.match(/^\/articles\/([a-z]+)$/);
+    const site = match?.[1];
+    if (!site || !Object.hasOwn(SOURCES, site)) {
+      return new Response("Not Found", { status: 404, headers });
     }
 
-    if (path === "/articles/zenn") {
-      const json = await fetchJson<ZennResponse>(env.ZENN_API_ENDPOINT);
-      const articles = (json?.articles ?? []).map(({ title, body_updated_at, path }) => {
-        return {
-          title,
-          updatedAt: body_updated_at,
-          url: `https://zenn.dev${path}`,
-        }
-      });
-
-      return new Response(JSON.stringify(articles), {
-        status: 200,
-        headers,
-      });
+    const cacheKey = `articles:${site}`;
+    const cached = await readCache(env, cacheKey);
+    if (cached !== undefined) {
+      return new Response(cached, { status: 200, headers });
     }
 
-    if (path === "/articles/kudoma") {
-      const json = (await fetchJson<KudomaPost[]>(env.KUDOMA_API_ENDPOINT)) ?? [];
-      const articles = json.map(({ title, date, link }) => ({
-        title: title.rendered,
-        updatedAt: date,
-        url: link,
-      }));
+    // On an upstream failure the response is still 200 with `[]` (the site shows
+    // "could not fetch articles"), but it is cached only for FAILURE_TTL_SECONDS.
+    const articles = await fetchArticles(SOURCES[site], env);
+    const body = JSON.stringify(articles ?? []);
+    ctx.waitUntil(writeCache(env, cacheKey, body, articles ? CACHE_TTL_SECONDS : FAILURE_TTL_SECONDS));
 
-      return new Response(JSON.stringify(articles), {
-        status: 200,
-        headers,
-      });
-    }
-
-    return new Response("Not Found", { status: 404, headers });
+    return new Response(body, { status: 200, headers });
   },
 };
 
-// Returns undefined when the upstream does not answer 200.
-//
-// 注意（ネガティブキャッシュ）: 呼び出し側はこの結果を空配列にして、200 で `[]` を返す。
-// フロントはそれをキャッシュに保存する（ArticleService.fetchArticles を参照）。
-// そのため上流の障害中は、キャッシュの TTL（1時間）のあいだ、その媒体の記事が表示されなくなる。
-// これは、障害中の上流へアクセスし続けて負荷を上げないための意図的な挙動。
-// 今後の改善案: 「上流の失敗」と「記事が0件」を区別できるようにする（502 を返す、
-// レスポンスにフラグを持たせるなど）。失敗時はフロントでキャッシュしない、
-// または短い TTL にする。
-async function fetchJson<T>(endpoint: string): Promise<T | undefined> {
-  const response = await fetch(endpoint);
-  if (response.status !== 200) {
+// Returns undefined when the upstream fails (network error, non-200 or unexpected body).
+async function fetchArticles(source: Source, env: Env): Promise<Article[] | undefined> {
+  try {
+    const response = await fetch(source.endpoint(env));
+    if (response.status !== 200) {
+      return undefined;
+    }
+    return source.normalize(await response.json());
+  } catch (error) {
+    console.error(`Failed to fetch articles: ${error}`);
     return undefined;
   }
-  return response.json<T>();
+}
+
+function hasCache(env: Env): env is Env & { REDIS_REST_URL: string; REDIS_REST_TOKEN: string } {
+  return Boolean(env.REDIS_REST_URL && env.REDIS_REST_TOKEN);
+}
+
+// The cache is best-effort: any failure falls back to fetching from the upstream.
+async function readCache(env: Env, key: string): Promise<string | undefined> {
+  if (!hasCache(env)) return undefined;
+  try {
+    const response = await fetch(`${env.REDIS_REST_URL}/get/${encodeURIComponent(key)}`, {
+      headers: { Authorization: `Bearer ${env.REDIS_REST_TOKEN}` },
+    });
+    if (!response.ok) return undefined;
+    const { result } = await response.json<{ result: string | null }>();
+    return result ?? undefined;
+  } catch (error) {
+    console.error(`Failed to read cache: ${error}`);
+    return undefined;
+  }
+}
+
+async function writeCache(env: Env, key: string, value: string, ttl: number): Promise<void> {
+  if (!hasCache(env)) return;
+  try {
+    const response = await fetch(`${env.REDIS_REST_URL}/set/${encodeURIComponent(key)}?EX=${ttl}`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${env.REDIS_REST_TOKEN}`,
+        "Content-Type": "application/json",
+      },
+      body: value,
+    });
+    if (!response.ok) {
+      console.error(`Failed to write cache: ${response.status}`);
+    }
+  } catch (error) {
+    console.error(`Failed to write cache: ${error}`);
+  }
 }
 
 function handleOptionsRequest(headers: Headers): Response {
-  headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  headers.set("Access-Control-Allow-Methods", "GET, OPTIONS");
   headers.set("Access-Control-Allow-Headers", "Content-Type");
   return new Response(null, { status: 204, headers });
 }
 
 function buildHeaders(): Headers {
   const headers = new Headers();
-  headers.set('Access-Control-Allow-Origin', '*');
+  headers.set("Access-Control-Allow-Origin", "*");
   return headers;
 }
