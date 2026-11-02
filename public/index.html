@@ -5,6 +5,27 @@
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#0074ae" />
+    <meta name="color-scheme" content="light dark" />
+    <style>
+      /* React 描画前の背景。ダークで一瞬白く光るのを防ぐ。 */
+      html[data-theme='dark'] { background: #051b27; color-scheme: dark; }
+    </style>
+    <script>
+      /* 描画前にテーマを決める。保存済みの選択 > OS 設定の順。localStorage が使えなくても続行する。 */
+      (function () {
+        var mode = null;
+        try {
+          var stored = window.localStorage.getItem('theme-mode');
+          if (stored === 'light' || stored === 'dark') mode = stored;
+        } catch (e) {}
+        if (!mode) mode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', mode);
+        if (mode === 'dark') {
+          var meta = document.querySelector('meta[name="theme-color"]');
+          if (meta) meta.setAttribute('content', '#051b27');
+        }
+      })();
+    </script>
     <meta
       name="description"
       content="Kudoma のポートフォリオ。スキル・経歴・プロダクト・技術記事をまとめています。"

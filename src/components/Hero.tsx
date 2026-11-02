@@ -1,7 +1,8 @@
 import React from 'react';
 
 import { Box, Container, Stack, Typography } from '@mui/material';
-import { alpha, keyframes } from '@mui/material/styles';
+import { keyframes } from '@mui/material/styles';
+import { alpha } from '../theme';
 
 import { SiteLogo, WaveDivider } from '.';
 import { skills } from '../data';

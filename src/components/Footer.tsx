@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { Box, Container, Stack, Typography } from '@mui/material';
-import { alpha } from '@mui/material/styles';
+import { alpha } from '../theme';
 
 import { Same, WaveDivider } from '.';
 import { ocean, rhythm } from '../theme';

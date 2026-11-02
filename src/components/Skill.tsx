@@ -1,7 +1,8 @@
 import React from 'react';
 
 import { Box, Rating, Stack, Typography } from '@mui/material';
-import { alpha, styled } from '@mui/material/styles';
+import { styled } from '@mui/material/styles';
+import { alpha } from '../theme';
 import PhishingIcon from '@mui/icons-material/Phishing';
 
 import { ocean } from '../theme';

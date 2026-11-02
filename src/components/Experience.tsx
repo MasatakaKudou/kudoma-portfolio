@@ -9,7 +9,7 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import { alpha } from '@mui/material/styles';
+import { alpha } from '../theme';
 import { CalendarMonth as CalendarIcon, ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
 
 import { SmallHeading } from '../fonts';
