@@ -1,7 +1,6 @@
 name = "kudoma-portfolio-article-backend"
 main = "src/index.js"
-# TODO: replace with the Compatibility date shown in the Cloudflare dashboard (Settings).
-compatibility_date = "2026-11-03"
+compatibility_date = "2024-12-01"
 
 # Keep the environment variables set in the Cloudflare dashboard
 # (QIITA_API_ENDPOINT, ZENN_API_ENDPOINT, KUDOMA_API_ENDPOINT).
