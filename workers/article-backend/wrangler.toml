@@ -1,0 +1,8 @@
+name = "kudoma-portfolio-article-backend"
+main = "src/index.js"
+compatibility_date = "2024-12-01"
+
+# Keep the environment variables set in the Cloudflare dashboard
+# (QIITA_API_ENDPOINT, ZENN_API_ENDPOINT, KUDOMA_API_ENDPOINT).
+# Without this, `wrangler deploy` would remove variables not listed in this file.
+keep_vars = true
