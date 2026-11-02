@@ -2,9 +2,10 @@ interface Env {
   QIITA_API_ENDPOINT: string;
   ZENN_API_ENDPOINT: string;
   KUDOMA_API_ENDPOINT: string;
-  // Upstash Redis (REST). Optional: without them the Worker works, just without caching.
-  REDIS_REST_URL?: string;
-  REDIS_REST_TOKEN?: string;
+  // Upstash Redis (REST) — the names Upstash itself uses. Optional: without them the Worker
+  // works, just without caching (and logs a warning).
+  UPSTASH_REDIS_REST_URL?: string;
+  UPSTASH_REDIS_REST_TOKEN?: string;
 }
 
 interface Article {
@@ -118,18 +119,24 @@ async function fetchArticles(source: Source, env: Env): Promise<Article[] | unde
   }
 }
 
-function hasCache(env: Env): env is Env & { REDIS_REST_URL: string; REDIS_REST_TOKEN: string } {
-  return Boolean(env.REDIS_REST_URL && env.REDIS_REST_TOKEN);
+function hasCache(env: Env): env is Env & { UPSTASH_REDIS_REST_URL: string; UPSTASH_REDIS_REST_TOKEN: string } {
+  if (env.UPSTASH_REDIS_REST_URL && env.UPSTASH_REDIS_REST_TOKEN) return true;
+  // Falling back silently made a misnamed variable hard to notice, so say so.
+  console.warn("UPSTASH_REDIS_REST_URL / UPSTASH_REDIS_REST_TOKEN are not set: serving without a cache");
+  return false;
 }
 
 // The cache is best-effort: any failure falls back to fetching from the upstream.
 async function readCache(env: Env, key: string): Promise<string | undefined> {
   if (!hasCache(env)) return undefined;
   try {
-    const response = await fetch(`${env.REDIS_REST_URL}/get/${encodeURIComponent(key)}`, {
-      headers: { Authorization: `Bearer ${env.REDIS_REST_TOKEN}` },
+    const response = await fetch(`${env.UPSTASH_REDIS_REST_URL}/get/${encodeURIComponent(key)}`, {
+      headers: { Authorization: `Bearer ${env.UPSTASH_REDIS_REST_TOKEN}` },
     });
-    if (!response.ok) return undefined;
+    if (!response.ok) {
+      console.error(`Failed to read cache: ${response.status}`);
+      return undefined;
+    }
     const { result } = await response.json<{ result: string | null }>();
     return result ?? undefined;
   } catch (error) {
@@ -141,10 +148,10 @@ async function readCache(env: Env, key: string): Promise<string | undefined> {
 async function writeCache(env: Env, key: string, value: string, ttl: number): Promise<void> {
   if (!hasCache(env)) return;
   try {
-    const response = await fetch(`${env.REDIS_REST_URL}/set/${encodeURIComponent(key)}?EX=${ttl}`, {
+    const response = await fetch(`${env.UPSTASH_REDIS_REST_URL}/set/${encodeURIComponent(key)}?EX=${ttl}`, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${env.REDIS_REST_TOKEN}`,
+        Authorization: `Bearer ${env.UPSTASH_REDIS_REST_TOKEN}`,
         "Content-Type": "application/json",
       },
       body: value,

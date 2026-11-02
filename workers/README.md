@@ -21,7 +21,7 @@ CI runs the type check on every pull request.
 
 Set in the Cloudflare dashboard (not in this repo). `wrangler.toml` uses `keep_vars = true` so deploys do not remove them.
 
-- `article-backend`: `QIITA_API_ENDPOINT`, `ZENN_API_ENDPOINT`, `KUDOMA_API_ENDPOINT`, `REDIS_REST_URL` and `REDIS_REST_TOKEN` (secret; optional — without them the Worker simply does not cache)
+- `article-backend`: `QIITA_API_ENDPOINT`, `ZENN_API_ENDPOINT`, `KUDOMA_API_ENDPOINT`, `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` (secret; optional — without them the Worker simply does not cache)
 
 ## Deploy (manual)
 
