@@ -47,6 +47,7 @@ Merging to `main` deploys automatically:
 - `deploy-article-backend.yml` / `deploy-cache-backend.yml` — each Worker, only when its `workers/<name>/**` changes (or via manual "Run workflow"). Tokens are repo secrets: `CLOUDFLARE_API_TOKEN` (article), `CLOUDFLARE_API_TOKEN_CACHE` (cache), shared `CLOUDFLARE_ACCOUNT_ID`; each token is scoped to its one Worker.
 - All three post the result to Slack via the `SLACK_WEBHOOK_URL` secret (skipped if unset).
 - `ci.yml` — on PRs and pushes: `npm run lint`, `npm test`, and the Workers type check. Job name `lint-and-test` is the required status check.
+- `.github/dependabot.yml` — weekly (Monday, JST) grouped PRs for the root npm, `workers/` npm and GitHub Actions. The site's `typescript` major updates are ignored (react-scripts needs 4.9). Dependabot cannot track `.node-version` or the `wrangler@4.156.2` pin inside the deploy workflows, so bump those by hand.
 
 `main` is protected: changes go through a PR, `lint-and-test` must pass, and this applies to admins too. Repo auto-merge is disabled, so merge manually after checks pass. For stacked PRs, don't delete the base branch before retargeting the next PR to `main` — GitHub closes it instead.
 
