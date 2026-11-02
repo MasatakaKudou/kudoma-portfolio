@@ -1,0 +1,43 @@
+version: 2
+updates:
+  # Site (repo root)
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      timezone: Asia/Tokyo
+    open-pull-requests-limit: 3
+    labels: [dependencies]
+    groups:
+      minor-and-patch:
+        update-types: [minor, patch]
+    ignore:
+      # Pinned to 4.9 for react-scripts (CRA).
+      - dependency-name: typescript
+        update-types: ["version-update:semver-major"]
+
+  # Workers (separate package.json; typescript stays current here)
+  - package-ecosystem: npm
+    directory: /workers
+    schedule:
+      interval: weekly
+      day: monday
+      timezone: Asia/Tokyo
+    open-pull-requests-limit: 3
+    labels: [dependencies]
+    groups:
+      minor-and-patch:
+        update-types: [minor, patch]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      timezone: Asia/Tokyo
+    open-pull-requests-limit: 3
+    labels: [dependencies, github-actions]
+    groups:
+      actions:
+        patterns: ["*"]
