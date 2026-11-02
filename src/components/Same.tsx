@@ -10,5 +10,5 @@ interface SameProps {
 
 /** マスコットのサメ。装飾用途なので代替テキストは持たせない。 */
 export const Same: React.FC<SameProps> = ({ size = 60 }) => (
-  <Box component="img" src={same} alt="" aria-hidden sx={{ width: size, height: 'auto' }} />
+  <Box component="img" src={same} alt="" aria-hidden width={360} height={360} sx={{ width: size, height: 'auto' }} />
 );

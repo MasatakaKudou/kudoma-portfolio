@@ -22,6 +22,8 @@ const Shark: React.FC<{ delay?: number; flip?: boolean; size?: number }> = ({
     src={same}
     alt=""
     aria-hidden
+    width={360}
+    height={360}
     sx={{
       width: { xs: size * 0.62, sm: size * 0.82, md: size },
       height: 'auto',
