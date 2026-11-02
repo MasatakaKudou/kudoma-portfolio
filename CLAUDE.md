@@ -36,7 +36,7 @@ Single-page personal portfolio (React 18 + TypeScript + MUI/Emotion) at www.kudo
 Source of the two APIs `REACT_APP_ARTICLE_BASE_URL` / `REACT_APP_CACHE_BASE_URL` point to. TypeScript, bundled by `wrangler` (no build step); see `workers/README.md`.
 
 - `article-backend` — `GET /articles/{qiita,zenn,kudoma}`; fetches the upstream APIs (URLs come from dashboard env vars) and normalizes them to `{title, updatedAt, url}`.
-- `cache-backend` — `GET /get?key=` and `POST /set` in front of Upstash Redis (TTL 1 hour). `/set` is restricted to an `Origin` allow list (`ALLOWED_ORIGINS` in the source: www.kudoma.net and localhost:3000), which only stops other websites, not direct `curl` calls. Add new origins there.
+- `cache-backend` — `GET /get?key=` and `POST /set` in front of Upstash Redis (TTL 1 hour). `/set` is restricted to an `Origin` allow list (`ALLOWED_ORIGINS` in the source: www.kudoma.net and localhost:3000), which only stops other websites, not direct `curl` calls. Add new origins there. Keys are also restricted to an allow list (`ALLOWED_KEYS`: `<site>-blog`) and values to 256 KB, on both `/get` and `/set`; add a key there when adding a new `Site`.
 - Each `wrangler.toml` sets `keep_vars = true`: env vars and secrets (`QIITA_API_ENDPOINT`, …, `REDIS_REST_URL`, `REDIS_REST_TOKEN`) live in the Cloudflare dashboard, not in the repo. Do not remove it, or a deploy would wipe them. `compatibility_date` is pinned to the deployed value per Worker.
 
 ### CI/CD (`.github/workflows/`)

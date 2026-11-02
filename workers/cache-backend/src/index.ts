@@ -6,6 +6,15 @@ const ALLOWED_ORIGINS = [
   "http://localhost:3000",
 ];
 
+// The only keys the site ever reads or writes (`<site>-blog`, see ArticleService).
+// Anything else is rejected, so a key can never address other data or other Redis commands.
+// Add a new key here when a new `Site` is added.
+const ALLOWED_KEYS = ["qiita-blog", "zenn-blog", "kudoma-blog"];
+
+// Upper bound for a cached value, in bytes. The article lists are a few KB;
+// this only stops someone from filling Redis with large payloads.
+const MAX_VALUE_BYTES = 256 * 1024;
+
 interface Env {
   REDIS_REST_URL: string;
   REDIS_REST_TOKEN: string;
@@ -38,7 +47,10 @@ export default {
       if (!key) {
         return new Response("Key is required", { status: 400, headers });
       }
-      
+      if (!isAllowedKey(key)) {
+        return new Response("Invalid key", { status: 400, headers });
+      }
+
       const { ok, result: cache } = await getCache(redisUrl, redisToken, key);
       if (!ok) {
         return new Response("Failed to fetch data from Upstash", { status: 502, headers });
@@ -73,8 +85,17 @@ export default {
       if (!key) {
         return new Response("Key is required", { status: 400, headers });
       }
+      if (!isAllowedKey(key)) {
+        return new Response("Invalid key", { status: 400, headers });
+      }
       if (!value) {
         return new Response("Value is required", { status: 400, headers });
+      }
+      if (typeof value !== "string") {
+        return new Response("Value must be a string", { status: 400, headers });
+      }
+      if (new TextEncoder().encode(value).length > MAX_VALUE_BYTES) {
+        return new Response("Value is too large", { status: 413, headers });
       }
 
       const isSuccess = await setCache(redisUrl, redisToken, key, value);
@@ -88,6 +109,10 @@ export default {
     return new Response("Invalid request", { status: 404, headers });
   },
 };
+
+function isAllowedKey(key: string): boolean {
+  return ALLOWED_KEYS.includes(key);
+}
 
 function handleOptionsRequest(headers: Headers, allowedOrigin: string | null): Response {
   // Preflight is only approved for the allowed origins.
@@ -108,7 +133,7 @@ interface CacheResult {
 }
 
 async function getCache(url: string, token: string, key: string): Promise<CacheResult> {
-  const response = await fetch(`${url}/get/${key}`, {
+  const response = await fetch(`${url}/get/${encodeURIComponent(key)}`, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -123,7 +148,7 @@ async function getCache(url: string, token: string, key: string): Promise<CacheR
 }
 
 async function setCache(url: string, token: string, key: string, value: string, ttl = 3600): Promise<boolean> {
-  const response = await fetch(`${url}/set/${key}?EX=${ttl}`, {
+  const response = await fetch(`${url}/set/${encodeURIComponent(key)}?EX=${ttl}`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,
