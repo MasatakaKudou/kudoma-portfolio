@@ -1,8 +1,0 @@
-name = "kudoma-portfolio-cache-backend"
-main = "src/index.ts"
-compatibility_date = "2024-09-18"
-
-# Keep the variables/secrets set in the Cloudflare dashboard
-# (REDIS_REST_URL, REDIS_REST_TOKEN).
-# Without this, `wrangler deploy` would remove variables not listed in this file.
-keep_vars = true
