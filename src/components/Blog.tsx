@@ -9,7 +9,7 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import { alpha } from '@mui/material/styles';
+import { alpha } from '../theme';
 
 import { elevation, ocean } from '../theme';
 import { NewTabNote } from './NewTabNote';
@@ -46,7 +46,7 @@ export const Blog: React.FC<BlogProps> = ({ updatedAt, title, url, tag }) => (
           <Chip
             size="small"
             label={tag}
-            sx={{ bgcolor: TAG_COLORS[tag] ?? ocean.main, color: '#fff' }}
+            sx={{ bgcolor: TAG_COLORS[tag] ?? ocean.main, color: TAG_COLORS[tag] ? '#fff' : ocean.onMain }}
           />
           <Chip
             size="small"

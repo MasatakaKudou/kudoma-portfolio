@@ -10,7 +10,7 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import { alpha } from '@mui/material/styles';
+import { alpha } from '../theme';
 import { GitHub as GitHubIcon, Launch as LaunchIcon } from '@mui/icons-material';
 
 import { NewTabNote, Same } from '.';

@@ -2,7 +2,7 @@ import React from 'react';
 import { Helmet } from 'react-helmet';
 
 import { Box, Stack, Typography } from '@mui/material';
-import { alpha } from '@mui/material/styles';
+import { alpha } from '../theme';
 
 import { AccountLogo } from '.';
 import { MediumHeading } from '../fonts';
@@ -59,11 +59,12 @@ export const About = () => (
           position: 'relative',
           display: 'block',
           width: '100%',
+          height: 'auto',
           aspectRatio: '1 / 1',
           objectFit: 'cover',
           borderRadius: 4,
           boxShadow: elevation.lifted,
-          border: `1px solid ${alpha('#ffffff', 0.9)}`,
+          border: `1px solid ${alpha(ocean.paper, 0.9)}`,
         }}
       />
     </Box>

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 import { Box, Button, Chip, Container, Stack, Typography } from '@mui/material';
-import { alpha } from '@mui/material/styles';
+import { alpha } from '../theme';
 
 import { ocean } from '../theme';
 import { TaggedArticle } from '../types';
@@ -84,7 +84,7 @@ export const BlogList: React.FC<BlogListProps> = ({ articles }) => {
               variant={selected ? 'filled' : 'outlined'}
               sx={
                 selected
-                  ? { bgcolor: color, color: '#fff', '&:hover, &.Mui-focusVisible': { bgcolor: color } }
+                  ? { bgcolor: color, color: TAG_COLORS[tag] ? '#fff' : ocean.onMain, '&:hover, &.Mui-focusVisible': { bgcolor: color } }
                   : { borderColor: color, color: 'text.primary' }
               }
             />

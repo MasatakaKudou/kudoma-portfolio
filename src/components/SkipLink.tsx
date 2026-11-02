@@ -18,7 +18,7 @@ export const SkipLink: React.FC<{ targetId: string }> = ({ targetId }) => (
       py: 1,
       borderRadius: 999,
       bgcolor: ocean.deep,
-      color: '#ffffff',
+      color: ocean.surface,
       fontWeight: 700,
       textDecoration: 'none',
       '&:focus': { top: 12 },

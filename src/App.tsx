@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 
 import { Box, CssBaseline, Stack, Typography } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
@@ -24,7 +24,8 @@ import {
 import { experiences, skills, products } from './data';
 import { ArticleService } from './service';
 import { TaggedArticle } from './types';
-import { ocean, theme } from './theme';
+import { ThemeToggle, useThemeMode } from './ThemeMode';
+import { getTheme, ocean } from './theme';
 
 const SKILL_LEVELS = [
   { rating: 1, description: '具体的なゴールと学習対象、壁打ちが必要' },
@@ -50,6 +51,8 @@ const cardGrid = (min: number) => ({
 });
 
 function App() {
+  const { mode, toggle } = useThemeMode();
+  const theme = useMemo(() => getTheme(mode), [mode]);
   const [articles, setArticles] = useState<TaggedArticle[] | null>(null);
 
   useEffect(() => {
@@ -124,6 +127,7 @@ function App() {
       </Box>
 
       <Footer />
+      <ThemeToggle mode={mode} onToggle={toggle} />
     </ThemeProvider>
   );
 }

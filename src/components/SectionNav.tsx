@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 import { Box, Container } from '@mui/material';
-import { alpha } from '@mui/material/styles';
+import { alpha } from '../theme';
 
 import { ocean } from '../theme';
 
@@ -58,7 +58,7 @@ export const SectionNav: React.FC<SectionNavProps> = ({ items }) => {
         height: NAV_HEIGHT,
         display: 'flex',
         alignItems: 'center',
-        bgcolor: alpha('#ffffff', 0.78),
+        bgcolor: alpha(ocean.paper, 0.78),
         backdropFilter: 'blur(10px)',
         WebkitBackdropFilter: 'blur(10px)',
         borderBottom: `1px solid ${alpha(ocean.main, 0.14)}`,
@@ -90,7 +90,7 @@ export const SectionNav: React.FC<SectionNavProps> = ({ items }) => {
                 fontWeight: 700,
                 fontSize: '.9rem',
                 letterSpacing: '.04em',
-                color: isActive ? '#ffffff' : alpha(ocean.deep, 0.78),
+                color: isActive ? ocean.onMain : alpha(ocean.deep, 0.78),
                 bgcolor: isActive ? ocean.main : 'transparent',
                 textDecoration: 'none',
                 transition: 'background-color .2s ease, color .2s ease',

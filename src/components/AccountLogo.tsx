@@ -2,7 +2,7 @@ import React from 'react';
 
 import { Box, Tooltip } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
-import { alpha } from '@mui/material/styles';
+import { alpha } from '../theme';
 
 import { elevation, ocean } from '../theme';
 import { NewTabNote } from './NewTabNote';

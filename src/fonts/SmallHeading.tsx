@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { Typography } from '@mui/material';
-import { alpha } from '@mui/material/styles';
+import { alpha } from '../theme';
 
 import { ocean } from '../theme';
 

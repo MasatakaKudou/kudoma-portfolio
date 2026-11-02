@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { Box } from '@mui/material';
-import { alpha } from '@mui/material/styles';
+import { alpha } from '../theme';
 
 import { ocean } from '../theme';
 
@@ -32,7 +32,7 @@ export const WaveDivider: React.FC<WaveDividerProps> = ({ lines = 3, flip = fals
           key={i}
           d={`M0 ${22 + i * 11} C 150 ${6 + i * 11}, 300 ${38 + i * 11}, 450 ${22 + i * 11} S 750 ${6 + i * 11}, 900 ${22 + i * 11} S 1150 ${38 + i * 11}, 1200 ${22 + i * 11}`}
           fill="none"
-          stroke={alpha(ocean.main, 0.34 - i * 0.09)}
+          style={{ stroke: alpha(ocean.main, 0.34 - i * 0.09) }}
           strokeWidth={2 - i * 0.4}
           strokeLinecap="round"
         />
