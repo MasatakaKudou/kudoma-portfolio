@@ -11,7 +11,7 @@ export default {
 
     // Temporary endpoint to verify automatic deployment. Change the message and redeploy to confirm.
     if (path === "/ping") {
-      return new Response(JSON.stringify({ message: "pong v1" }), {
+      return new Response(JSON.stringify({ message: "pong v2" }), {
         status: 200,
         headers,
       });
