@@ -1,8 +1,10 @@
 {
   "name": "kudoma-portfolio-workers",
   "private": true,
+  "type": "module",
   "scripts": {
-    "typecheck": "tsc --noEmit -p ."
+    "typecheck": "tsc --noEmit -p .",
+    "test": "node --test \"article-backend/test/*.test.ts\""
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^5.20261102.1",

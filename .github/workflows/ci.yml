@@ -29,3 +29,4 @@ jobs:
       - run: npm test
       - run: npm ci --prefix workers
       - run: npm run typecheck --prefix workers
+      - run: npm test --prefix workers
