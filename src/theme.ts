@@ -70,12 +70,13 @@ export const theme = createTheme({
           background: `linear-gradient(180deg, ${ocean.surface} 0%, ${ocean.foam} 40%, #b9e4f2 100%)`,
           minHeight: '100vh',
         },
-        html: { scrollBehavior: 'smooth' },
+        // scrollPaddingTop: キーボードフォーカスで移動した要素が sticky ナビに隠れないようにする。
+        html: { scrollBehavior: 'smooth', scrollPaddingTop: 72 },
         '::selection': { background: alpha(ocean.light, 0.28) },
         // キーボード操作の可視性。MUI 既定より輪郭をはっきりさせる。
         ':focus-visible': { outline: `2px solid ${ocean.mid}`, outlineOffset: 3, borderRadius: 4 },
         '@media (prefers-reduced-motion: reduce)': {
-          'html:focus-within': { scrollBehavior: 'auto' },
+          html: { scrollBehavior: 'auto' },
           '*, *::before, *::after': {
             animationDuration: '.01ms !important',
             animationIterationCount: '1 !important',
