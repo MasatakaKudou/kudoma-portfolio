@@ -10,7 +10,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `npx jest tests/utils/CacheClient.spec.ts` — run a single test file (add `-t "name"` for a single test)
 - `npm run test-ui` — react-scripts test runner (CRA default; not used by the main suite)
 
-Node version is pinned in `.node-version` (CI uses v20.8.1). No lint script; ESLint runs via CRA's `react-app` config.
+Node version is pinned in `.node-version` (CI uses the same version). No lint script; ESLint runs via CRA's `react-app` config.
 
 ## Architecture
 
