@@ -21,7 +21,7 @@ Node version is pinned in `.node-version` (26.13.0) and used by CI. The site's `
 
 ## Architecture
 
-Single-page personal portfolio (React 18 + TypeScript + MUI/Emotion) at www.kudoma.net, plus two Cloudflare Workers that back its blog section.
+Single-page personal portfolio (React 18 + TypeScript + MUI/Emotion) at www.kudoma.net, plus a Cloudflare Worker that backs its blog section.
 
 ### Site (`src/`)
 
@@ -33,19 +33,18 @@ Single-page personal portfolio (React 18 + TypeScript + MUI/Emotion) at www.kudo
 
 ### Workers (`workers/`)
 
-Source of the two APIs `REACT_APP_ARTICLE_BASE_URL` / `REACT_APP_CACHE_BASE_URL` point to. TypeScript, bundled by `wrangler` (no build step); see `workers/README.md`.
+Source of the API `REACT_APP_ARTICLE_BASE_URL` points to. TypeScript, bundled by `wrangler` (no build step); see `workers/README.md`.
 
-- `article-backend` — `GET /articles/{qiita,zenn,kudoma}`; fetches the upstream APIs (URLs come from dashboard env vars) and normalizes them to `{title, updatedAt, url}`.
-- `cache-backend` — `GET /get?key=` and `POST /set` in front of Upstash Redis (TTL 1 hour). `/set` is restricted to an `Origin` allow list (`ALLOWED_ORIGINS` in the source: www.kudoma.net and localhost:3000), which only stops other websites, not direct `curl` calls. Add new origins there. Keys are also restricted to an allow list (`ALLOWED_KEYS`: `<site>-blog`) and values to 256 KB, on both `/get` and `/set`; add a key there when adding a new `Site`.
-- Each `wrangler.toml` sets `keep_vars = true`: env vars and secrets (`QIITA_API_ENDPOINT`, …, `REDIS_REST_URL`, `REDIS_REST_TOKEN`) live in the Cloudflare dashboard, not in the repo. Do not remove it, or a deploy would wipe them. `compatibility_date` is pinned to the deployed value per Worker.
+- `article-backend` — `GET /articles/{qiita,zenn,kudoma}`; fetches the upstream APIs (URLs come from dashboard env vars) and normalizes them to `{title, updatedAt, url}`. It also owns the cache: a read-through cache in Upstash Redis (key `articles:<site>`, 1 hour on success, 60 seconds on an upstream failure), written only by the Worker itself, so there is no public write endpoint. Without the Redis vars it just does not cache. Adding a new `Site` means adding it to `SOURCES` in the Worker.
+- `wrangler.toml` sets `keep_vars = true`: env vars and secrets (`QIITA_API_ENDPOINT`, …, `REDIS_REST_URL`, `REDIS_REST_TOKEN`) live in the Cloudflare dashboard, not in the repo. Do not remove it, or a deploy would wipe them. `compatibility_date` is pinned to the deployed value per Worker.
 
 ### CI/CD (`.github/workflows/`)
 
 Merging to `main` deploys automatically:
 
 - `deploy.yml` — site to GitHub Pages on every push to `main`.
-- `deploy-article-backend.yml` / `deploy-cache-backend.yml` — each Worker, only when its `workers/<name>/**` changes (or via manual "Run workflow"). Tokens are repo secrets: `CLOUDFLARE_API_TOKEN` (article), `CLOUDFLARE_API_TOKEN_CACHE` (cache), shared `CLOUDFLARE_ACCOUNT_ID`; each token is scoped to its one Worker.
-- All three post the result to Slack via the `SLACK_WEBHOOK_URL` secret (skipped if unset).
+- `deploy-article-backend.yml` — the Worker, only when `workers/article-backend/**` changes (or via manual "Run workflow"). Tokens are repo secrets: `CLOUDFLARE_API_TOKEN` (scoped to that one Worker) and `CLOUDFLARE_ACCOUNT_ID`.
+- Both deploy workflows post the result to Slack via the `SLACK_WEBHOOK_URL` secret (skipped if unset).
 - `ci.yml` — on PRs and pushes: `npm run lint`, `npm test`, and the Workers type check. Job name `lint-and-test` is the required status check.
 - `.github/dependabot.yml` — weekly (Monday, JST) grouped PRs for the root npm, `workers/` npm and GitHub Actions. The site's `typescript` major updates are ignored (react-scripts needs 4.9). Dependabot cannot track `.node-version` or the `wrangler@4.156.2` pin inside the deploy workflows, so bump those by hand.
 
