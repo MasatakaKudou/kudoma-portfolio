@@ -17,6 +17,7 @@ import {
   Hero,
   Product,
   Section,
+  SectionNav,
   Skill,
   Skills,
 } from './components';
@@ -34,6 +35,14 @@ const SKILL_LEVELS = [
 ];
 
 const BLOG_SKELETON_COUNT = 6;
+
+const NAV_ITEMS = [
+  { id: 'about', label: 'About' },
+  { id: 'skills', label: 'Skills' },
+  { id: 'experiences', label: 'Experiences' },
+  { id: 'products', label: 'Products' },
+  { id: 'blog', label: 'Blog' },
+];
 
 /** カードを並べるレスポンシブグリッド。列数だけを差し替えて使い回す。 */
 const cardGrid = (min: number) => ({
@@ -69,6 +78,7 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Hero />
+      <SectionNav items={NAV_ITEMS} />
 
       <Box component="main">
         <Section id="about" title="About">

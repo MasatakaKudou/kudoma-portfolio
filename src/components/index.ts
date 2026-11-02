@@ -7,6 +7,7 @@ export * from './Hero';
 export * from './Product';
 export * from './Same';
 export * from './Section';
+export * from './SectionNav';
 export * from './SiteLogo';
 export * from './Skill';
 export * from './Skills';
