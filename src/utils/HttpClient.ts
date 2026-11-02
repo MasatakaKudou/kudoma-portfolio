@@ -12,21 +12,4 @@ export class HttpClient {
       return;
     }
   }
-
-  public async post(url: string, requestBody: any): Promise<boolean> {
-    try {
-      const body = typeof requestBody === 'string' ? requestBody : JSON.stringify(requestBody);
-      await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body,
-      });
-      return true;
-    } catch (error) {
-      console.error(`Failed to request - url: ${url} because of ${error}`);
-      return false;
-    }
-  }
 }
