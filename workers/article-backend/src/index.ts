@@ -83,12 +83,13 @@ export default {
 
 // Returns undefined when the upstream does not answer 200.
 //
-// NOTE (negative cache): callers turn this into an empty list and answer 200 with `[]`,
-// which the frontend then stores in the cache (see ArticleService.fetchArticles).
-// So an upstream outage hides that site's articles for the cache TTL (1 hour) instead of
-// hitting the failing upstream on every page view. This is intentional to keep the load low.
-// Possible improvement: tell "upstream failed" apart from "no articles" (e.g. 502, or a
-// flag in the response) so the frontend can skip caching, or cache failures with a shorter TTL.
+// 注意（ネガティブキャッシュ）: 呼び出し側はこの結果を空配列にして、200 で `[]` を返す。
+// フロントはそれをキャッシュに保存する（ArticleService.fetchArticles を参照）。
+// そのため上流の障害中は、キャッシュの TTL（1時間）のあいだ、その媒体の記事が表示されなくなる。
+// これは、障害中の上流へアクセスし続けて負荷を上げないための意図的な挙動。
+// 今後の改善案: 「上流の失敗」と「記事が0件」を区別できるようにする（502 を返す、
+// レスポンスにフラグを持たせるなど）。失敗時はフロントでキャッシュしない、
+// または短い TTL にする。
 async function fetchJson<T>(endpoint: string): Promise<T | undefined> {
   const response = await fetch(endpoint);
   if (response.status !== 200) {
