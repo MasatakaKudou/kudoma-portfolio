@@ -18,6 +18,7 @@ import {
   Product,
   Section,
   SectionNav,
+  SkipLink,
   Skill,
   Skills,
 } from './components';
@@ -77,10 +78,11 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
+      <SkipLink targetId="main" />
       <Hero />
       <SectionNav items={NAV_ITEMS} />
 
-      <Box component="main">
+      <Box component="main" id="main" tabIndex={-1} sx={{ outline: 'none' }}>
         <Section id="about" title="About">
           <About />
         </Section>
@@ -120,14 +122,14 @@ function App() {
         </Section>
 
         <Section id="blog" title="Blog">
-          <Box sx={cardGrid(300)}>
+          <Box sx={cardGrid(300)} aria-busy={articles === null}>
             {articles
               ? articles.map((article) => <Blog key={article.url} {...article} />)
               : Array.from({ length: BLOG_SKELETON_COUNT }, (_, i) => <BlogSkeleton key={i} />)}
           </Box>
           {articles?.length === 0 && (
             <Container disableGutters>
-              <Typography sx={{ color: alpha(ocean.deep, 0.7) }}>記事を取得できませんでした。</Typography>
+              <Typography role="status" sx={{ color: alpha(ocean.deep, 0.7) }}>記事を取得できませんでした。</Typography>
             </Container>
           )}
         </Section>

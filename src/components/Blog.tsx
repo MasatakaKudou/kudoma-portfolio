@@ -12,6 +12,7 @@ import {
 import { alpha } from '@mui/material/styles';
 
 import { elevation, ocean } from '../theme';
+import { NewTabNote } from './NewTabNote';
 
 export interface BlogProps {
   updatedAt: string;
@@ -54,7 +55,7 @@ export const Blog: React.FC<BlogProps> = ({ updatedAt, title, url, tag }) => (
             sx={{ color: 'text.secondary' }}
           />
         </Stack>
-        <Typography sx={{ mt: 1.5, fontWeight: 600, lineHeight: 1.7 }}>{title}</Typography>
+        <Typography sx={{ mt: 1.5, fontWeight: 600, lineHeight: 1.7 }}>{title}<NewTabNote /></Typography>
       </CardContent>
     </CardActionArea>
   </Card>
