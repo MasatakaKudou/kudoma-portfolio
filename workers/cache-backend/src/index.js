@@ -1,3 +1,11 @@
+// Origins allowed to write to the cache (and to pass CORS preflight).
+// Note: the Origin header can be forged by non-browser clients, so this only
+// stops other websites from writing through a visitor's browser.
+const ALLOWED_ORIGINS = [
+  "https://www.kudoma.net",
+  "http://localhost:3000",
+];
+
 export default {
   async fetch(request, env) {
     const redisUrl = env.REDIS_REST_URL;
@@ -7,9 +15,11 @@ export default {
     const path = url.pathname;
 
     const headers = buildHeaders();
+    const origin = request.headers.get("Origin");
+    const isAllowedOrigin = ALLOWED_ORIGINS.includes(origin);
 
     if (request.method === "OPTIONS") {
-      return handleOptionsRequest(headers);
+      return handleOptionsRequest(headers, origin, isAllowedOrigin);
     }
 
     if (path === "/get") {
@@ -33,6 +43,13 @@ export default {
     }
     
     if (path === "/set") {
+      // Writes are only accepted from the allowed origins.
+      if (!isAllowedOrigin) {
+        return new Response("Forbidden", { status: 403 });
+      }
+      headers.set("Access-Control-Allow-Origin", origin);
+      headers.set("Vary", "Origin");
+
       // SETリクエストの処理
       let body;
       try {
@@ -61,7 +78,14 @@ export default {
   },
 };
 
-function handleOptionsRequest(headers) {
+function handleOptionsRequest(headers, origin, isAllowedOrigin) {
+  // Preflight is only approved for the allowed origins.
+  if (isAllowedOrigin) {
+    headers.set("Access-Control-Allow-Origin", origin);
+  } else {
+    headers.delete("Access-Control-Allow-Origin");
+  }
+  headers.set("Vary", "Origin");
   headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
   headers.set("Access-Control-Allow-Headers", "Content-Type");
   return new Response(null, { status: 204, headers });
