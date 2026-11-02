@@ -1,6 +1,7 @@
 export * from './About';
 export * from './AccountLogo';
 export * from './Blog';
+export * from './BlogList';
 export * from './Experience';
 export * from './Footer';
 export * from './Hero';

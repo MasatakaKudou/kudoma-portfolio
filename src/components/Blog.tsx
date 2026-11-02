@@ -21,7 +21,7 @@ export interface BlogProps {
 }
 
 /** 媒体ごとのブランドカラー。未知のタグはブランドカラーにフォールバックする。 */
-const TAG_COLORS: Record<string, string> = {
+export const TAG_COLORS: Record<string, string> = {
   Qiita: '#55C500',
   Zenn: '#3EA8FF',
   Kudoma: '#E53935',
@@ -45,7 +45,7 @@ export const Blog: React.FC<BlogProps> = ({ updatedAt, title, url, tag }) => (
           <Chip
             size="small"
             label={tag}
-            sx={{ bgcolor: TAG_COLORS[tag] ?? ocean.main, color: '#fff' }}
+            sx={{ bgcolor: TAG_COLORS[tag] ?? ocean.main, color: TAG_COLORS[tag] ? '#fff' : ocean.onMain }}
           />
           <Chip
             size="small"
