@@ -24,9 +24,14 @@ export interface ProductProps {
     product: string;
   };
   skills: string[];
+  /** 実在するスクリーンショットがある場合のみ指定する。未指定なら装飾バナーを表示。 */
+  image?: {
+    src: string;
+    alt: string;
+  };
 }
 
-export const Product: React.FC<ProductProps> = ({ title, description, url, skills }) => (
+export const Product: React.FC<ProductProps> = ({ title, description, url, skills, image }) => (
   <Card
     sx={{
       display: 'flex',
@@ -35,19 +40,35 @@ export const Product: React.FC<ProductProps> = ({ title, description, url, skill
       '&:hover': { transform: 'translateY(-6px)', boxShadow: elevation.lifted, borderColor: alpha(ocean.main, 0.3) },
     }}
   >
-    {/* サメを引き伸ばさず、海のグラデーション面に泳がせて見出し代わりにする。 */}
-    <Box
-      aria-hidden
-      sx={{
-        display: 'grid',
-        placeItems: 'center',
-        height: 132,
-        background: `linear-gradient(135deg, ${alpha(ocean.shallow, 0.45)}, ${alpha(ocean.light, 0.22)})`,
-        borderBottom: `1px solid ${alpha(ocean.main, 0.1)}`,
-      }}
-    >
-      <Same size={92} />
-    </Box>
+    {/* 画像未指定なら、サメを引き伸ばさず海のグラデーション面に泳がせて見出し代わりにする。 */}
+    {image ? (
+      <Box
+        component="img"
+        src={image.src}
+        alt={image.alt}
+        loading="lazy"
+        sx={{
+          display: 'block',
+          width: '100%',
+          height: 132,
+          objectFit: 'cover',
+          borderBottom: `1px solid ${alpha(ocean.main, 0.1)}`,
+        }}
+      />
+    ) : (
+      <Box
+        aria-hidden
+        sx={{
+          display: 'grid',
+          placeItems: 'center',
+          height: 132,
+          background: `linear-gradient(135deg, ${alpha(ocean.shallow, 0.45)}, ${alpha(ocean.light, 0.22)})`,
+          borderBottom: `1px solid ${alpha(ocean.main, 0.1)}`,
+        }}
+      >
+        <Same size={92} />
+      </Box>
+    )}
 
     <CardContent sx={{ flex: 1, p: 3 }}>
       <Typography variant="h5" component="h3" gutterBottom>
@@ -76,6 +97,7 @@ export const Product: React.FC<ProductProps> = ({ title, description, url, skill
           size="small"
           startIcon={<GitHubIcon />}
           href={url.github}
+          aria-label={`${title} の GitHub リポジトリ（新しいタブで開く）`}
           target="_blank"
           rel="noopener noreferrer"
         >
@@ -88,6 +110,7 @@ export const Product: React.FC<ProductProps> = ({ title, description, url, skill
         size="small"
         endIcon={<LaunchIcon />}
         href={url.product}
+        aria-label={`${title} の公開サイト（新しいタブで開く）`}
         target="_blank"
         rel="noopener noreferrer"
       >

@@ -3,6 +3,7 @@ main = "src/index.ts"
 compatibility_date = "2024-12-01"
 
 # Keep the environment variables set in the Cloudflare dashboard
-# (QIITA_API_ENDPOINT, ZENN_API_ENDPOINT, KUDOMA_API_ENDPOINT).
+# (QIITA_API_ENDPOINT, ZENN_API_ENDPOINT, KUDOMA_API_ENDPOINT, and optionally
+# REDIS_REST_URL / REDIS_REST_TOKEN for the cache).
 # Without this, `wrangler deploy` would remove variables not listed in this file.
 keep_vars = true

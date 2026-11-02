@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 
-import { Box, Container, CssBaseline, Stack, Typography } from '@mui/material';
-import { ThemeProvider, alpha } from '@mui/material/styles';
+import { Box, CssBaseline, Stack, Typography } from '@mui/material';
+import { ThemeProvider } from '@mui/material/styles';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
@@ -10,8 +10,7 @@ import InfoIcon from '@mui/icons-material/Info';
 
 import {
   About,
-  Blog,
-  BlogSkeleton,
+  BlogList,
   Experience,
   Footer,
   Hero,
@@ -34,8 +33,6 @@ const SKILL_LEVELS = [
   { rating: 4, description: '大まかなゴールが必要' },
   { rating: 5, description: '自走' },
 ];
-
-const BLOG_SKELETON_COUNT = 6;
 
 const NAV_ITEMS = [
   { id: 'about', label: 'About' },
@@ -122,16 +119,7 @@ function App() {
         </Section>
 
         <Section id="blog" title="Blog">
-          <Box sx={cardGrid(300)} aria-busy={articles === null}>
-            {articles
-              ? articles.map((article) => <Blog key={article.url} {...article} />)
-              : Array.from({ length: BLOG_SKELETON_COUNT }, (_, i) => <BlogSkeleton key={i} />)}
-          </Box>
-          {articles?.length === 0 && (
-            <Container disableGutters>
-              <Typography role="status" sx={{ color: alpha(ocean.deep, 0.7) }}>記事を取得できませんでした。</Typography>
-            </Container>
-          )}
+          <BlogList articles={articles} />
         </Section>
       </Box>
 

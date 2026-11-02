@@ -22,7 +22,7 @@ export interface BlogProps {
 }
 
 /** 媒体ごとのブランドカラー。未知のタグはブランドカラーにフォールバックする。 */
-const TAG_COLORS: Record<string, string> = {
+export const TAG_COLORS: Record<string, string> = {
   Qiita: '#55C500',
   Zenn: '#3EA8FF',
   Kudoma: '#E53935',
