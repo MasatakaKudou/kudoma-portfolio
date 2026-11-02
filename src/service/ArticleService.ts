@@ -25,6 +25,10 @@ export class ArticleService {
       };
     });
 
+    // NOTE (negative cache): when the article API fails upstream it still answers 200 with `[]`,
+    // and that empty list is cached too (TTL 1 hour, set by the cache Worker). This is intentional,
+    // it avoids hammering a failing upstream, but it hides the site's articles until the TTL expires.
+    // Possible improvement: do not cache (or use a shorter TTL for) an empty result caused by an upstream failure.
     await this.cacheClient.set(`${siteName}-blog`, taggedArticles);
     return taggedArticles;
   }
