@@ -1,5 +1,5 @@
 name = "kudoma-portfolio-article-backend"
-main = "src/index.js"
+main = "src/index.ts"
 compatibility_date = "2024-12-01"
 
 # Keep the environment variables set in the Cloudflare dashboard

@@ -20,7 +20,12 @@ jobs:
         with:
           node-version-file: .node-version
           cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            workers/package-lock.json
 
       - run: npm ci
       - run: npm run lint
       - run: npm test
+      - run: npm ci --prefix workers
+      - run: npm run typecheck --prefix workers

@@ -7,6 +7,17 @@ Source of the backend APIs used by the portfolio site. Each directory is one Wor
 | `article-backend/` | `kudoma-portfolio-article-backend` | `GET /articles/{qiita,zenn,kudoma}` |
 | `cache-backend/` | `kudoma-portfolio-cache-backend` | `GET /get?key=`, `POST /set` (Upstash Redis, TTL 1h) |
 
+## Development
+
+Workers are written in TypeScript (`src/index.ts`); `wrangler` bundles them, no build step. Type checking uses the dependencies in `workers/package.json` (kept separate from the site's):
+
+```bash
+npm ci --prefix workers
+npm run typecheck --prefix workers
+```
+
+CI runs the type check on every pull request.
+
 ## Environment variables
 
 Set in the Cloudflare dashboard (not in this repo). `wrangler.toml` uses `keep_vars = true` so deploys do not remove them.
