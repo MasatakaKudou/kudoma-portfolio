@@ -17,10 +17,10 @@ jobs:
 
     steps:
       - name: リポジトリのチェックアウト
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Node.jsのセットアップ
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: 26.13.0
           cache: npm
@@ -37,7 +37,7 @@ jobs:
           cp -r build/* public/
 
       - name: GitHub Pages アーティファクトのアップロード
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
           path: public
 
@@ -51,4 +51,4 @@ jobs:
     steps:
       - name: GitHub Pages へデプロイ
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
