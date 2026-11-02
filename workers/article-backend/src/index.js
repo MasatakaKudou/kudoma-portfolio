@@ -27,7 +27,7 @@ export default {
 
     if (path === "/articles/zenn") {
       const json = await fetchReponse(env.ZENN_API_ENDPOINT);
-      const articles = json.articles.map(({ title, body_updated_at, path }) => {
+      const articles = (json.articles ?? []).map(({ title, body_updated_at, path }) => {
         return {
           title,
           updatedAt: body_updated_at,
@@ -54,6 +54,8 @@ export default {
         headers,
       });
     }
+
+    return new Response("Not Found", { status: 404, headers });
   },
 };
 
