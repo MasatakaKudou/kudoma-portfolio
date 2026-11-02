@@ -5,12 +5,14 @@ Source of the backend APIs used by the portfolio site. Each directory is one Wor
 | Directory | Worker name | Endpoints |
 | --- | --- | --- |
 | `article-backend/` | `kudoma-portfolio-article-backend` | `GET /articles/{qiita,zenn,kudoma}` |
+| `cache-backend/` | `kudoma-portfolio-cache-backend` | `GET /get?key=`, `POST /set` (Upstash Redis, TTL 1h) |
 
 ## Environment variables
 
 Set in the Cloudflare dashboard (not in this repo). `wrangler.toml` uses `keep_vars = true` so deploys do not remove them.
 
 - `article-backend`: `QIITA_API_ENDPOINT`, `ZENN_API_ENDPOINT`, `KUDOMA_API_ENDPOINT`
+- `cache-backend`: `REDIS_REST_URL`, `REDIS_REST_TOKEN` (secret)
 
 ## Deploy (manual)
 
