@@ -1,0 +1,162 @@
+import assert from "node:assert/strict";
+import { afterEach, beforeEach, describe, test } from "node:test";
+
+import worker from "../src/index.ts";
+
+const ENV = {
+  QIITA_API_ENDPOINT: "https://upstream.test/qiita",
+  ZENN_API_ENDPOINT: "https://upstream.test/zenn",
+  KUDOMA_API_ENDPOINT: "https://upstream.test/kudoma",
+};
+const REDIS = "https://redis.test";
+const ENV_WITH_REDIS = { ...ENV, REDIS_REST_URL: REDIS, REDIS_REST_TOKEN: "secret" };
+
+const QIITA = [{ title: "q", updated_at: "2026-01-01", url: "https://qiita.com/a" }];
+const ZENN = { articles: [{ title: "z", body_updated_at: "2026-02-02", path: "/u/articles/1" }] };
+const KUDOMA = [{ title: { rendered: "k" }, date: "2026-03-03", link: "https://k.test/1" }];
+
+type FetchCall = { url: string; init?: RequestInit };
+type Handler = (url: string, init?: RequestInit) => Response | Promise<Response>;
+
+const realFetch = globalThis.fetch;
+let calls: FetchCall[];
+let handlers: { upstream: Handler; redisGet: Handler; redisSet: Handler };
+let pending: Promise<unknown>[];
+
+const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status });
+
+beforeEach(() => {
+  calls = [];
+  pending = [];
+  handlers = {
+    upstream: (url) => {
+      if (url.endsWith("/qiita")) return json(QIITA);
+      if (url.endsWith("/zenn")) return json(ZENN);
+      return json(KUDOMA);
+    },
+    redisGet: () => json({ result: null }),
+    redisSet: () => json({ result: "OK" }),
+  };
+  globalThis.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
+    const url = String(input);
+    calls.push({ url, init });
+    if (url.startsWith(`${REDIS}/get/`)) return handlers.redisGet(url, init);
+    if (url.startsWith(`${REDIS}/set/`)) return handlers.redisSet(url, init);
+    return handlers.upstream(url, init);
+  }) as typeof fetch;
+});
+
+afterEach(() => {
+  globalThis.fetch = realFetch;
+});
+
+// Calls the Worker and waits for the background cache write (ctx.waitUntil).
+async function call(path: string, env: object = ENV, init?: RequestInit) {
+  const ctx = { waitUntil: (p: Promise<unknown>) => void pending.push(p), passThroughOnException: () => {} };
+  const response = await worker.fetch(new Request(`https://worker.test${path}`, init), env as never, ctx as never);
+  await Promise.all(pending);
+  return response;
+}
+
+const upstreamCalls = () => calls.filter((c) => c.url.startsWith("https://upstream.test"));
+const redisCalls = (kind: "get" | "set") => calls.filter((c) => c.url.startsWith(`${REDIS}/${kind}/`));
+
+describe("normalization", () => {
+  test("qiita", async () => {
+    const res = await call("/articles/qiita");
+    assert.equal(res.status, 200);
+    assert.deepEqual(await res.json(), [{ title: "q", updatedAt: "2026-01-01", url: "https://qiita.com/a" }]);
+  });
+
+  test("zenn builds absolute URLs from the path", async () => {
+    const res = await call("/articles/zenn");
+    assert.deepEqual(await res.json(), [{ title: "z", updatedAt: "2026-02-02", url: "https://zenn.dev/u/articles/1" }]);
+  });
+
+  test("zenn without an articles field is an empty list", async () => {
+    handlers.upstream = () => json({});
+    const res = await call("/articles/zenn");
+    assert.deepEqual(await res.json(), []);
+  });
+
+  test("kudoma uses the rendered title", async () => {
+    const res = await call("/articles/kudoma");
+    assert.deepEqual(await res.json(), [{ title: "k", updatedAt: "2026-03-03", url: "https://k.test/1" }]);
+  });
+});
+
+describe("routing", () => {
+  test("unknown sites and prototype names are 404", async () => {
+    for (const path of ["/articles/foo", "/articles/constructor", "/articles/qiita/x", "/", "/get"]) {
+      assert.equal((await call(path)).status, 404, path);
+    }
+    assert.equal(calls.length, 0, "no upstream or Redis call for an unknown route");
+  });
+
+  test("OPTIONS answers the preflight with GET only", async () => {
+    const res = await call("/articles/qiita", ENV, { method: "OPTIONS" });
+    assert.equal(res.status, 204);
+    assert.equal(res.headers.get("Access-Control-Allow-Origin"), "*");
+    assert.equal(res.headers.get("Access-Control-Allow-Methods"), "GET, OPTIONS");
+  });
+});
+
+describe("cache", () => {
+  test("miss: fetches the upstream and stores the result for an hour", async () => {
+    const res = await call("/articles/qiita", ENV_WITH_REDIS);
+    assert.equal(res.status, 200);
+    assert.equal(upstreamCalls().length, 1);
+    const [set] = redisCalls("set");
+    assert.equal(set.url, `${REDIS}/set/articles%3Aqiita?EX=3600`);
+    assert.equal((set.init?.headers as Record<string, string>).Authorization, "Bearer secret");
+    assert.deepEqual(JSON.parse(String(set.init?.body)), await res.json());
+  });
+
+  test("hit: returns the cached body without touching the upstream", async () => {
+    const cached = JSON.stringify([{ title: "cached", updatedAt: "x", url: "https://c.test" }]);
+    handlers.redisGet = () => json({ result: cached });
+    const res = await call("/articles/qiita", ENV_WITH_REDIS);
+    assert.equal(await res.text(), cached);
+    assert.equal(upstreamCalls().length, 0);
+    assert.equal(redisCalls("set").length, 0);
+  });
+
+  test("upstream failure: 200 with [] cached for only 60 seconds", async () => {
+    handlers.upstream = () => new Response("boom", { status: 500 });
+    const res = await call("/articles/zenn", ENV_WITH_REDIS);
+    assert.equal(res.status, 200);
+    assert.deepEqual(await res.json(), []);
+    assert.equal(redisCalls("set")[0].url, `${REDIS}/set/articles%3Azenn?EX=60`);
+  });
+
+  test("upstream network error does not become a 500", async () => {
+    handlers.upstream = () => {
+      throw new Error("network");
+    };
+    const res = await call("/articles/kudoma", ENV_WITH_REDIS);
+    assert.equal(res.status, 200);
+    assert.deepEqual(await res.json(), []);
+  });
+
+  test("a Redis read failure falls back to the upstream", async () => {
+    handlers.redisGet = () => new Response("down", { status: 500 });
+    const res = await call("/articles/qiita", ENV_WITH_REDIS);
+    assert.equal(res.status, 200);
+    assert.equal(upstreamCalls().length, 1);
+  });
+
+  test("a Redis write failure does not affect the response", async () => {
+    handlers.redisSet = () => {
+      throw new Error("down");
+    };
+    const res = await call("/articles/qiita", ENV_WITH_REDIS);
+    assert.equal(res.status, 200);
+    assert.equal((await res.json() as unknown[]).length, 1);
+  });
+
+  test("without the Redis vars it works and never calls Redis", async () => {
+    const res = await call("/articles/qiita");
+    assert.equal(res.status, 200);
+    assert.equal(redisCalls("get").length + redisCalls("set").length, 0);
+  });
+});
