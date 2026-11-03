@@ -1,5 +1,7 @@
 import { ArticleService } from '../../src/service/ArticleService';
 
+jest.mock('../../src/env', () => ({ ARTICLE_BASE_URL: 'https://article-backend.test' }));
+
 describe('ArticleService', () => {
   const ARTICLES = [{ title: 't', updatedAt: '2026-01-01', url: 'https://example.com/a' }];
 
@@ -25,7 +27,7 @@ describe('ArticleService', () => {
     const result = await service.fetchArticles('zenn');
 
     const requested = new URL(fetchSpy.mock.calls[0][0]);
-    expect(requested.origin).toBe(new URL(process.env.REACT_APP_ARTICLE_BASE_URL).origin);
+    expect(requested.origin).toBe('https://article-backend.test');
     expect(requested.pathname).toBe('/articles/zenn');
     expect(result).toEqual([{ ...ARTICLES[0], tag: 'Zenn' }]);
   });

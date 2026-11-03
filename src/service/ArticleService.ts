@@ -1,5 +1,6 @@
 import { HttpClient } from '../utils';
 import { Article, Site, TaggedArticle } from '../types';
+import { ARTICLE_BASE_URL } from '../env';
 
 export class ArticleService {
   private httpClient = new HttpClient();
@@ -9,7 +10,7 @@ export class ArticleService {
    * 上流が失敗したときは Worker が `[]` を返す（短い TTL でのみキャッシュ）ので、取得できなければ空配列にする。
    */
   public async fetchArticles(siteName: Site): Promise<TaggedArticle[]> {
-    const baseUrl = new URL(process.env.REACT_APP_ARTICLE_BASE_URL);
+    const baseUrl = new URL(ARTICLE_BASE_URL);
     baseUrl.pathname = `/articles/${siteName}`;
     const response = await this.httpClient.get<Article[]>(baseUrl.toString());
     if (!response) {
