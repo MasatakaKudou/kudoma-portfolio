@@ -4,6 +4,7 @@ export * from './Blog';
 export * from './BlogList';
 export * from './Experience';
 export * from './Footer';
+export * from './GithubActivity';
 export * from './Hero';
 export * from './NewTabNote';
 export * from './Product';
