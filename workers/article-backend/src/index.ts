@@ -136,7 +136,7 @@ export default {
     const cacheKey = `articles:${env.CACHE_VERSION ?? "dev"}:${site}`;
     const cached = await readCache(env, cacheKey);
     if (cached !== undefined) {
-      return new Response(cached, { status: 200, headers });
+      return jsonResponse(cached, headers);
     }
 
     // On an upstream failure the response is still 200 with `[]` (the site shows
@@ -145,7 +145,7 @@ export default {
     const body = JSON.stringify(articles ?? []);
     ctx.waitUntil(writeCache(env, cacheKey, body, articles ? CACHE_TTL_SECONDS : FAILURE_TTL_SECONDS));
 
-    return new Response(body, { status: 200, headers });
+    return jsonResponse(body, headers);
   },
 };
 
@@ -206,6 +206,11 @@ async function writeCache(env: Env, key: string, value: string, ttl: number): Pr
   } catch (error) {
     console.error(`Failed to write cache: ${error}`);
   }
+}
+
+function jsonResponse(body: string, headers: Headers): Response {
+  headers.set("Content-Type", "application/json");
+  return new Response(body, { status: 200, headers });
 }
 
 function handleOptionsRequest(headers: Headers): Response {
