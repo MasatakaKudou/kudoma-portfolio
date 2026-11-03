@@ -6,6 +6,9 @@ interface Env {
   // works, just without caching (and logs a warning).
   UPSTASH_REDIS_REST_URL?: string;
   UPSTASH_REDIS_REST_TOKEN?: string;
+  // Set to the commit SHA by the deploy workflow (`--var CACHE_VERSION:<sha>`). It is part of the
+  // cache key, so a deploy never serves entries written by the previous code. "dev" when unset.
+  CACHE_VERSION?: string;
 }
 
 interface Article {
@@ -109,9 +112,6 @@ function toExcerpt(text: unknown): string | undefined {
   return chars.length > EXCERPT_LENGTH ? `${chars.slice(0, EXCERPT_LENGTH).join("")}…` : plain;
 }
 
-// Bump this whenever the shape of the cached articles changes. Entries under the previous
-// version are never read again and simply expire on their own TTL.
-const CACHE_VERSION = "v2";
 // A successful result is cached for an hour.
 const CACHE_TTL_SECONDS = 3600;
 // An upstream failure is cached briefly, so a down upstream is not hit on every visit
@@ -133,7 +133,7 @@ export default {
       return new Response("Not Found", { status: 404, headers });
     }
 
-    const cacheKey = `articles:${CACHE_VERSION}:${site}`;
+    const cacheKey = `articles:${env.CACHE_VERSION ?? "dev"}:${site}`;
     const cached = await readCache(env, cacheKey);
     if (cached !== undefined) {
       return new Response(cached, { status: 200, headers });
