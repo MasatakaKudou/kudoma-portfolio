@@ -114,10 +114,12 @@ describe("optional card metadata", () => {
     assert.equal("thumbnail" in b, false);
   });
 
-  test("a cache entry in the old shape (no new fields) is served as-is", async () => {
+  test("only the versioned cache key is read, so entries in the old shape are never served", async () => {
     const old = JSON.stringify([{ title: "old", updatedAt: "x", url: "https://c.test" }]);
-    handlers.redisGet = () => json({ result: old });
-    assert.equal(await (await call("/articles/zenn", ENV_WITH_REDIS)).text(), old);
+    handlers.redisGet = (url) => json({ result: url.endsWith("articles%3Azenn") ? old : null });
+    const res = await call("/articles/zenn", ENV_WITH_REDIS);
+    assert.equal(redisCalls("get")[0].url, `${REDIS}/get/articles%3Av2%3Azenn`);
+    assert.notEqual(await res.text(), old);
   });
 });
 
@@ -143,7 +145,7 @@ describe("cache", () => {
     assert.equal(res.status, 200);
     assert.equal(upstreamCalls().length, 1);
     const [set] = redisCalls("set");
-    assert.equal(set.url, `${REDIS}/set/articles%3Aqiita?EX=3600`);
+    assert.equal(set.url, `${REDIS}/set/articles%3Av2%3Aqiita?EX=3600`);
     assert.equal((set.init?.headers as Record<string, string>).Authorization, "Bearer secret");
     assert.deepEqual(JSON.parse(String(set.init?.body)), await res.json());
   });
@@ -162,7 +164,7 @@ describe("cache", () => {
     const res = await call("/articles/zenn", ENV_WITH_REDIS);
     assert.equal(res.status, 200);
     assert.deepEqual(await res.json(), []);
-    assert.equal(redisCalls("set")[0].url, `${REDIS}/set/articles%3Azenn?EX=60`);
+    assert.equal(redisCalls("set")[0].url, `${REDIS}/set/articles%3Av2%3Azenn?EX=60`);
   });
 
   test("upstream network error does not become a 500", async () => {
