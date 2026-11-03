@@ -9,7 +9,7 @@ const ENV = {
   KUDOMA_API_ENDPOINT: "https://upstream.test/kudoma",
 };
 const REDIS = "https://redis.test";
-const ENV_WITH_REDIS = { ...ENV, UPSTASH_REDIS_REST_URL: REDIS, UPSTASH_REDIS_REST_TOKEN: "secret" };
+const ENV_WITH_REDIS = { ...ENV, CACHE_VERSION: "v1", UPSTASH_REDIS_REST_URL: REDIS, UPSTASH_REDIS_REST_TOKEN: "secret" };
 
 const QIITA = [{ title: "q", updated_at: "2026-01-01", url: "https://qiita.com/a" }];
 const ZENN = { articles: [{ title: "z", body_updated_at: "2026-02-02", path: "/u/articles/1" }] };
@@ -85,6 +85,51 @@ describe("normalization", () => {
   });
 });
 
+describe("optional card metadata", () => {
+  test("qiita: likes and a plain-text excerpt", async () => {
+    handlers.upstream = () =>
+      json([{ ...QIITA[0], likes_count: 7, body: "# Title\n\nHello **world** [link](https://x.test) " + "あ".repeat(200) }]);
+    const [a] = (await (await call("/articles/qiita")).json()) as { likes: number; excerpt: string }[];
+    assert.equal(a.likes, 7);
+    assert.ok(a.excerpt.startsWith("Title Hello world link"));
+    assert.ok(a.excerpt.endsWith("…"));
+    assert.equal(Array.from(a.excerpt).length, 101);
+  });
+
+  test("zenn: likes", async () => {
+    handlers.upstream = () => json({ articles: [{ ...ZENN.articles[0], liked_count: 2 }] });
+    const [a] = (await (await call("/articles/zenn")).json()) as { likes: number }[];
+    assert.equal(a.likes, 2);
+  });
+
+  test("kudoma: https thumbnail and excerpt without HTML; non-https thumbnail dropped", async () => {
+    handlers.upstream = () =>
+      json([
+        { ...KUDOMA[0], excerpt: { rendered: "<p>Hi &amp; bye</p>" }, jetpack_featured_media_url: "https://k.test/i.png" },
+        { ...KUDOMA[0], jetpack_featured_media_url: "http://k.test/i.png" },
+      ]);
+    const [a, b] = (await (await call("/articles/kudoma")).json()) as Record<string, unknown>[];
+    assert.equal(a.excerpt, "Hi & bye");
+    assert.equal(a.thumbnail, "https://k.test/i.png");
+    assert.equal("thumbnail" in b, false);
+  });
+
+  test("only the cache key for the deployed version is read, so entries in the old shape are never served", async () => {
+    const old = JSON.stringify([{ title: "old", updatedAt: "x", url: "https://c.test" }]);
+    handlers.redisGet = (url) => json({ result: url.endsWith("articles%3Azenn") ? old : null });
+    const res = await call("/articles/zenn", ENV_WITH_REDIS);
+    assert.equal(redisCalls("get")[0].url, `${REDIS}/get/articles%3Av1%3Azenn`);
+    assert.notEqual(await res.text(), old);
+  });
+});
+
+describe("cache version", () => {
+  test("falls back to \"dev\" when CACHE_VERSION is not set", async () => {
+    await call("/articles/qiita", { ...ENV_WITH_REDIS, CACHE_VERSION: undefined });
+    assert.equal(redisCalls("get")[0].url, `${REDIS}/get/articles%3Adev%3Aqiita`);
+  });
+});
+
 describe("routing", () => {
   test("unknown sites and prototype names are 404", async () => {
     for (const path of ["/articles/foo", "/articles/constructor", "/articles/qiita/x", "/", "/get"]) {
@@ -107,7 +152,7 @@ describe("cache", () => {
     assert.equal(res.status, 200);
     assert.equal(upstreamCalls().length, 1);
     const [set] = redisCalls("set");
-    assert.equal(set.url, `${REDIS}/set/articles%3Aqiita?EX=3600`);
+    assert.equal(set.url, `${REDIS}/set/articles%3Av1%3Aqiita?EX=3600`);
     assert.equal((set.init?.headers as Record<string, string>).Authorization, "Bearer secret");
     assert.deepEqual(JSON.parse(String(set.init?.body)), await res.json());
   });
@@ -126,7 +171,7 @@ describe("cache", () => {
     const res = await call("/articles/zenn", ENV_WITH_REDIS);
     assert.equal(res.status, 200);
     assert.deepEqual(await res.json(), []);
-    assert.equal(redisCalls("set")[0].url, `${REDIS}/set/articles%3Azenn?EX=60`);
+    assert.equal(redisCalls("set")[0].url, `${REDIS}/set/articles%3Av1%3Azenn?EX=60`);
   });
 
   test("upstream network error does not become a 500", async () => {
