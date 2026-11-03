@@ -6,28 +6,39 @@ interface Env {
   // works, just without caching (and logs a warning).
   UPSTASH_REDIS_REST_URL?: string;
   UPSTASH_REDIS_REST_TOKEN?: string;
+  // Set to the commit SHA by the deploy workflow (`--var CACHE_VERSION:<sha>`). It is part of the
+  // cache key, so a deploy never serves entries written by the previous code. "dev" when unset.
+  CACHE_VERSION?: string;
 }
 
 interface Article {
   title: string;
   updatedAt: string;
   url: string;
+  // Optional: not every site provides them, and entries cached before they were added lack them.
+  likes?: number;
+  thumbnail?: string;
+  excerpt?: string;
 }
 
 interface QiitaItem {
   title: string;
   updated_at: string;
   url: string;
+  likes_count?: number;
+  body?: string;
 }
 
 interface ZennResponse {
-  articles?: { title: string; body_updated_at: string; path: string }[];
+  articles?: { title: string; body_updated_at: string; path: string; liked_count?: number }[];
 }
 
 interface KudomaPost {
   title: { rendered: string };
   date: string;
   link: string;
+  excerpt?: { rendered?: string };
+  jetpack_featured_media_url?: string;
 }
 
 interface Source {
@@ -42,31 +53,64 @@ const SOURCES: Record<string, Source> = {
   qiita: {
     endpoint: (env) => env.QIITA_API_ENDPOINT,
     normalize: (json) =>
-      (json as QiitaItem[]).map(({ title, updated_at, url }) => ({
+      (json as QiitaItem[]).map(({ title, updated_at, url, likes_count, body }) => ({
         title,
         updatedAt: updated_at,
         url,
+        likes: count(likes_count),
+        excerpt: toExcerpt(body),
       })),
   },
   zenn: {
     endpoint: (env) => env.ZENN_API_ENDPOINT,
     normalize: (json) =>
-      ((json as ZennResponse).articles ?? []).map(({ title, body_updated_at, path }) => ({
+      ((json as ZennResponse).articles ?? []).map(({ title, body_updated_at, path, liked_count }) => ({
         title,
         updatedAt: body_updated_at,
         url: `https://zenn.dev${path}`,
+        likes: count(liked_count),
       })),
   },
   kudoma: {
     endpoint: (env) => env.KUDOMA_API_ENDPOINT,
     normalize: (json) =>
-      (json as KudomaPost[]).map(({ title, date, link }) => ({
+      (json as KudomaPost[]).map(({ title, date, link, excerpt, jetpack_featured_media_url }) => ({
         title: title.rendered,
         updatedAt: date,
         url: link,
+        thumbnail: httpsUrl(jetpack_featured_media_url),
+        excerpt: toExcerpt(excerpt?.rendered),
       })),
   },
 };
+
+const EXCERPT_LENGTH = 100;
+
+function count(value: unknown): number | undefined {
+  return typeof value === "number" && Number.isFinite(value) && value >= 0 ? value : undefined;
+}
+
+function httpsUrl(value: unknown): string | undefined {
+  return typeof value === "string" && value.startsWith("https://") ? value : undefined;
+}
+
+/** Plain-text summary of an HTML/Markdown body (rough: tags and common Markdown marks are dropped). */
+function toExcerpt(text: unknown): string | undefined {
+  if (typeof text !== "string") return undefined;
+  const plain = text
+    .replace(/<[^>]*>/g, " ")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&#8230;|&hellip;/g, "…")
+    .replace(/```[\s\S]*?```/g, " ")
+    .replace(/!?\[([^\]]*)\]\([^)]*\)/g, "$1")
+    .replace(/[#>*`_~|-]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  if (!plain) return undefined;
+  const chars = Array.from(plain);
+  return chars.length > EXCERPT_LENGTH ? `${chars.slice(0, EXCERPT_LENGTH).join("")}…` : plain;
+}
 
 // A successful result is cached for an hour.
 const CACHE_TTL_SECONDS = 3600;
@@ -89,7 +133,7 @@ export default {
       return new Response("Not Found", { status: 404, headers });
     }
 
-    const cacheKey = `articles:${site}`;
+    const cacheKey = `articles:${env.CACHE_VERSION ?? "dev"}:${site}`;
     const cached = await readCache(env, cacheKey);
     if (cached !== undefined) {
       return new Response(cached, { status: 200, headers });

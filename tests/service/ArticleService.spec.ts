@@ -30,6 +30,18 @@ describe('ArticleService', () => {
     expect(result).toEqual([{ ...ARTICLES[0], tag: 'Zenn' }]);
   });
 
+  test('passes through likes / thumbnail / excerpt, and tolerates their absence (old cache)', async () => {
+    const full = { ...ARTICLES[0], likes: 3, thumbnail: 'https://example.com/t.png', excerpt: 'e' };
+    fetchSpy.mockResolvedValue(jsonResponse(200, [full, ARTICLES[0]]));
+
+    const result = await service.fetchArticles('qiita');
+
+    expect(result).toEqual([
+      { ...full, tag: 'Qiita' },
+      { ...ARTICLES[0], tag: 'Qiita' },
+    ]);
+  });
+
   test('does not touch any cache endpoint (caching is server-side)', async () => {
     fetchSpy.mockResolvedValue(jsonResponse(200, ARTICLES));
 
