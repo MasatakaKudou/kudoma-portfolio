@@ -13,6 +13,7 @@ import {
   BlogList,
   Experience,
   Footer,
+  GithubActivity,
   Hero,
   Product,
   Section,
@@ -22,7 +23,7 @@ import {
   Skills,
 } from './components';
 import { experiences, skills, products } from './data';
-import { ArticleService } from './service';
+import { ArticleService, GithubActivityData, GithubActivityService } from './service';
 import { TaggedArticle } from './types';
 import { ThemeToggle, useThemeMode } from './ThemeMode';
 import { getTheme, ocean } from './theme';
@@ -41,6 +42,7 @@ const NAV_ITEMS = [
   { id: 'experiences', label: 'Experiences' },
   { id: 'products', label: 'Products' },
   { id: 'blog', label: 'Blog' },
+  { id: 'github', label: 'GitHub' },
 ];
 
 /** カードを並べるレスポンシブグリッド。列数だけを差し替えて使い回す。 */
@@ -73,6 +75,13 @@ function App() {
       setArticles(sortedArticles);
     };
     fetchArticles();
+  }, []);
+
+  // null は取得中、undefined は取得失敗。
+  const [githubActivity, setGithubActivity] = useState<GithubActivityData | null | undefined>(null);
+
+  useEffect(() => {
+    new GithubActivityService().fetchActivity().then(setGithubActivity);
   }, []);
 
   return (
@@ -123,6 +132,10 @@ function App() {
 
         <Section id="blog" title="Blog">
           <BlogList articles={articles} />
+        </Section>
+
+        <Section id="github" title="GitHub">
+          <GithubActivity activity={githubActivity} />
         </Section>
       </Box>
 
