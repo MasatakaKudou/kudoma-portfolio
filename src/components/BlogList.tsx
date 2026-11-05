@@ -65,10 +65,9 @@ export const BlogList: React.FC<BlogListProps> = ({ articles }) => {
       <Stack
         direction="row"
         useFlexGap
-        flexWrap="wrap"
         role="group"
         aria-label="媒体で絞り込む"
-        sx={{ gap: 1, mb: 3 }}
+        sx={{ flexWrap: 'wrap', gap: 1, mb: 3 }}
       >
         {[ALL, ...tags].map((tag) => {
           const selected = filter === tag;

@@ -21,7 +21,7 @@ export const MediumHeading: React.FC<MediumHeadingProps> = ({ title, underline =
   if (!underline) return heading;
 
   return (
-    <Stack direction="row" alignItems="center" spacing={1.5} sx={{ mb: 2 }}>
+    <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center', mb: 2 }}>
       {heading}
       <Box
         aria-hidden

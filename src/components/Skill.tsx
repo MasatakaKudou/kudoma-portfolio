@@ -35,7 +35,7 @@ const hooks = (rating: number) => (
 export const Skill: React.FC<SkillProps> = ({ name, description, rating }) => {
   if (description) {
     return (
-      <Stack direction="row" alignItems="center" spacing={1.5} sx={{ py: 0.75 }}>
+      <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center', py: 0.75 }}>
         <Box sx={{ minWidth: 132 }}>{hooks(rating)}</Box>
         <Typography variant="body2">{description}</Typography>
       </Stack>
@@ -45,10 +45,10 @@ export const Skill: React.FC<SkillProps> = ({ name, description, rating }) => {
   return (
     <Stack
       direction="row"
-      alignItems="center"
-      justifyContent="space-between"
       spacing={2}
       sx={{
+        alignItems: 'center',
+        justifyContent: 'space-between',
         py: 1.25,
         borderBottom: `1px solid ${alpha(ocean.main, 0.08)}`,
       }}

@@ -202,8 +202,11 @@ export const getTheme = (mode: ThemeMode) => {
 
       MuiButton: {
         styleOverrides: {
-          root: { borderRadius: 999, paddingInline: 18 },
-          containedPrimary: { boxShadow: 'none', '&:hover': { boxShadow: elevation.soft } },
+          root: {
+            borderRadius: 999,
+            paddingInline: 18,
+            '&.MuiButton-contained.MuiButton-colorPrimary': { boxShadow: 'none', '&:hover': { boxShadow: elevation.soft } },
+          },
         },
       },
 

@@ -74,10 +74,10 @@ export const Product: React.FC<ProductProps> = ({ title, description, url, skill
       <Typography variant="h5" component="h3" gutterBottom>
         {title}
       </Typography>
-      <Typography variant="body2" color="text.secondary">
+      <Typography variant="body2" sx={{ color: 'text.secondary' }}>
         {description}
       </Typography>
-      <Stack direction="row" useFlexGap flexWrap="wrap" sx={{ gap: 1, mt: 2.5 }}>
+      <Stack direction="row" useFlexGap sx={{ flexWrap: 'wrap', gap: 1, mt: 2.5 }}>
         {skills.map((skill) => (
           <Chip
             key={skill}
