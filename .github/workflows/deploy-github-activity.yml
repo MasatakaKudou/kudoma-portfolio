@@ -18,6 +18,7 @@ concurrency:
 jobs:
   deploy-github-activity:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     env:
       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
     steps:
