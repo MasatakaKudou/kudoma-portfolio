@@ -29,7 +29,18 @@ export interface BlogProps {
 export const TAG_COLORS: Record<string, string> = {
   Qiita: '#55C500',
   Zenn: '#3EA8FF',
-  Kudoma: '#E53935',
+  Kudoma: '#D32F2F',
+};
+
+/**
+ * タグの背景色に載せる文字色（AA の 4.5:1 を満たす組み合わせ）。
+ * Qiita と Zenn は、ブランド色のまま白文字だと 2.2:1 / 2.6:1 しかないので、濃い色にする。
+ * Kudoma は自分のサイトの色なので、白文字で 5:1 が出るよう、少し濃くしている（#E53935 は 4.2:1）。
+ */
+export const TAG_TEXT_COLORS: Record<string, string> = {
+  Qiita: '#02202e',
+  Zenn: '#02202e',
+  Kudoma: '#fff',
 };
 
 export const Blog: React.FC<BlogProps> = ({ updatedAt, title, url, tag, likes, thumbnail, excerpt }) => (
@@ -53,7 +64,7 @@ export const Blog: React.FC<BlogProps> = ({ updatedAt, title, url, tag, likes, t
           <Chip
             size="small"
             label={tag}
-            sx={{ bgcolor: TAG_COLORS[tag] ?? ocean.main, color: TAG_COLORS[tag] ? '#fff' : ocean.onMain }}
+            sx={{ bgcolor: TAG_COLORS[tag] ?? ocean.main, color: TAG_TEXT_COLORS[tag] ?? ocean.onMain }}
           />
           <Chip
             size="small"

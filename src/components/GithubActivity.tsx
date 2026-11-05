@@ -40,7 +40,7 @@ export const GithubActivity: React.FC<GithubActivityProps> = ({ activity }) => {
   }
 
   if (!activity) {
-    return <Typography role="status" sx={{ color: alpha(ocean.deep, 0.7) }}>GitHub の活動を取得できませんでした。</Typography>;
+    return <Typography role="status" sx={{ color: 'text.secondary' }}>GitHub の活動を取得できませんでした。</Typography>;
   }
 
   const { pinned, contributions } = activity;
