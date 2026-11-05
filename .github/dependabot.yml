@@ -12,6 +12,11 @@ updates:
     groups:
       minor-and-patch:
         update-types: [minor, patch]
+    ignore:
+      # ts-jest (peer typescript <7) and typescript-eslint (peer typescript <6.1.0) do not support
+      # TypeScript 7 yet, so a major bump fails `npm ci` with ERESOLVE. Remove this once both do: #78
+      - dependency-name: typescript
+        update-types: ["version-update:semver-major"]
 
   # Workers (separate package.json)
   - package-ecosystem: npm
