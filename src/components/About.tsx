@@ -1,5 +1,5 @@
 import React from 'react';
-import { Helmet } from 'react-helmet';
+import { preload } from 'react-dom';
 
 import { Box, Stack, Typography } from '@mui/material';
 import { alpha } from '../theme';
@@ -24,69 +24,70 @@ const profile = [
   '趣味は海釣り、アニメ鑑賞。',
 ];
 
-export const About = () => (
-  <Box
-    sx={{
-      display: 'grid',
-      gridTemplateColumns: { xs: '1fr', md: 'minmax(0, 5fr) minmax(0, 7fr)' },
-      gap: { xs: 4, md: 6 },
-      alignItems: 'start',
-    }}
-  >
-    <Helmet>
-      <link rel="preload" as="image" href={meImage} />
-    </Helmet>
+export const About = () => {
+  // 先頭の写真を早めに取得させる（React 19 標準の preload。<head> に preload の <link> が出る）。
+  preload(meImage, { as: 'image' });
 
-    {/* 写真は角丸フレーム＋背面のアクセント面で「置いただけ」に見えないようにする。 */}
-    <Box sx={{ position: 'relative', maxWidth: 420, width: '100%', mx: { xs: 'auto', md: 0 } }}>
-      <Box
-        aria-hidden
-        sx={{
-          position: 'absolute',
-          inset: 0,
-          transform: 'translate(14px, 14px)',
-          borderRadius: 4,
-          background: `linear-gradient(135deg, ${alpha(ocean.mid, 0.35)}, ${alpha(ocean.shallow, 0.2)})`,
-        }}
-      />
-      <Box
-        component="img"
-        src={meImage}
-        alt="堤防で釣りの仕掛けを準備している様子"
-        width={900}
-        height={900}
-        sx={{
-          position: 'relative',
-          display: 'block',
-          width: '100%',
-          height: 'auto',
-          aspectRatio: '1 / 1',
-          objectFit: 'cover',
-          borderRadius: 4,
-          boxShadow: elevation.lifted,
-          border: `1px solid ${alpha(ocean.paper, 0.9)}`,
-        }}
-      />
-    </Box>
-
-    <Box>
-      <MediumHeading title="自己紹介" underline />
-      <Box component="p" sx={{ m: 0 }}>
-        {profile.map((line) => (
-          <Typography key={line} component="span" sx={{ display: 'block' }}>
-            {line}
-          </Typography>
-        ))}
+  return (
+    <Box
+      sx={{
+        display: 'grid',
+        gridTemplateColumns: { xs: '1fr', md: 'minmax(0, 5fr) minmax(0, 7fr)' },
+        gap: { xs: 4, md: 6 },
+        alignItems: 'start',
+      }}
+    >
+      {/* 写真は角丸フレーム＋背面のアクセント面で「置いただけ」に見えないようにする。 */}
+      <Box sx={{ position: 'relative', maxWidth: 420, width: '100%', mx: { xs: 'auto', md: 0 } }}>
+        <Box
+          aria-hidden
+          sx={{
+            position: 'absolute',
+            inset: 0,
+            transform: 'translate(14px, 14px)',
+            borderRadius: 4,
+            background: `linear-gradient(135deg, ${alpha(ocean.mid, 0.35)}, ${alpha(ocean.shallow, 0.2)})`,
+          }}
+        />
+        <Box
+          component="img"
+          src={meImage}
+          alt="堤防で釣りの仕掛けを準備している様子"
+          width={900}
+          height={900}
+          sx={{
+            position: 'relative',
+            display: 'block',
+            width: '100%',
+            height: 'auto',
+            aspectRatio: '1 / 1',
+            objectFit: 'cover',
+            borderRadius: 4,
+            boxShadow: elevation.lifted,
+            border: `1px solid ${alpha(ocean.paper, 0.9)}`,
+          }}
+        />
       </Box>
 
-      <Box sx={{ mt: 4 }}>
-        <MediumHeading title="アカウント" underline />
-        <Stack direction="row" useFlexGap flexWrap="wrap" sx={{ gap: 1.5 }}>
-          {accounts.map((account) => (
-            <AccountLogo key={account.name} {...account} />
+      <Box>
+        <MediumHeading title="自己紹介" underline />
+        <Box component="p" sx={{ m: 0 }}>
+          {profile.map((line) => (
+            <Typography key={line} component="span" sx={{ display: 'block' }}>
+              {line}
+            </Typography>
           ))}
-        </Stack>
+        </Box>
+
+        <Box sx={{ mt: 4 }}>
+          <MediumHeading title="アカウント" underline />
+          <Stack direction="row" useFlexGap flexWrap="wrap" sx={{ gap: 1.5 }}>
+            {accounts.map((account) => (
+              <AccountLogo key={account.name} {...account} />
+            ))}
+          </Stack>
+        </Box>
       </Box>
     </Box>
-  </Box>
-);
+  );
+};
