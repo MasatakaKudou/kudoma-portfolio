@@ -1,12 +1,11 @@
 import React from 'react';
-import { preload } from 'react-dom';
 
 import { Box, Stack, Typography } from '@mui/material';
 import { alpha } from '../theme';
 
 import { AccountLogo } from '.';
 import { MediumHeading } from '../fonts';
-import { githubIcon, meImage, qiitaIcon, sdIcon, zennIcon } from '../images';
+import { githubIcon, qiitaIcon, sdIcon, zennIcon } from '../images';
 import { elevation, ocean } from '../theme';
 
 const accounts = [
@@ -24,10 +23,14 @@ const profile = [
   '趣味は海釣り、アニメ鑑賞。',
 ];
 
-export const About = () => {
-  // 先頭の写真を早めに取得させる（React 19 標準の preload。<head> に preload の <link> が出る）。
-  preload(meImage, { as: 'image' });
+/**
+ * 先頭の写真（LCP になる）。public/images に、画面幅に合わせた 2 つのサイズ（420px と 840px）を AVIF / WebP で置いてある。
+ * index.html の <link rel="preload"> が、同じ URL と sizes で AVIF を先に取得させる。ここを変えるときは、index.html も合わせること。
+ */
+const ME_SIZES = '(max-width: 468px) calc(100vw - 32px), 420px';
+const me = (name: string) => `/images/${name}`;
 
+export const About = () => {
   return (
     <Box
       sx={{
@@ -49,24 +52,30 @@ export const About = () => {
             background: `linear-gradient(135deg, ${alpha(ocean.mid, 0.35)}, ${alpha(ocean.shallow, 0.2)})`,
           }}
         />
-        <Box
-          component="img"
-          src={meImage}
-          alt="堤防で釣りの仕掛けを準備している様子"
-          width={900}
-          height={900}
-          sx={{
-            position: 'relative',
-            display: 'block',
-            width: '100%',
-            height: 'auto',
-            aspectRatio: '1 / 1',
-            objectFit: 'cover',
-            borderRadius: 4,
-            boxShadow: elevation.lifted,
-            border: `1px solid ${alpha(ocean.paper, 0.9)}`,
-          }}
-        />
+        <picture>
+          <source type="image/avif" srcSet={`${me('me-420.avif')} 420w, ${me('me-840.avif')} 840w`} sizes={ME_SIZES} />
+          <source type="image/webp" srcSet={`${me('me-420.webp')} 420w, ${me('me-840.webp')} 840w`} sizes={ME_SIZES} />
+          <Box
+            component="img"
+            src={me('me-840.jpg')}
+            alt="堤防で釣りの仕掛けを準備している様子"
+            width={840}
+            height={840}
+            fetchPriority="high"
+            decoding="async"
+            sx={{
+              position: 'relative',
+              display: 'block',
+              width: '100%',
+              height: 'auto',
+              aspectRatio: '1 / 1',
+              objectFit: 'cover',
+              borderRadius: 4,
+              boxShadow: elevation.lifted,
+              border: `1px solid ${alpha(ocean.paper, 0.9)}`,
+            }}
+          />
+        </picture>
       </Box>
 
       <Box>
