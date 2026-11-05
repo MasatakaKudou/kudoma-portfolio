@@ -11,6 +11,13 @@ permissions:
   pages: write
   id-token: write
 
+# Merging several PRs in quick succession starts several Pages deployments at once, and an older one
+# can get stuck. Run one at a time; a run still waiting is replaced by the newer one. Do not cancel the
+# running deployment (cancel-in-progress: false), which could leave Pages half-updated.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
 jobs:
   build:
     runs-on: ubuntu-latest
