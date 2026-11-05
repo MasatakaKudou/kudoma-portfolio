@@ -53,7 +53,7 @@ const cardGrid = (min: number) => ({
 });
 
 function App() {
-  const { mode, toggle } = useThemeMode();
+  const { mode, preference, cycle } = useThemeMode();
   const theme = useMemo(() => getTheme(mode), [mode]);
   const [articles, setArticles] = useState<TaggedArticle[] | null>(null);
 
@@ -140,7 +140,7 @@ function App() {
       </Box>
 
       <Footer />
-      <ThemeToggle mode={mode} onToggle={toggle} />
+      <ThemeToggle mode={mode} preference={preference} onCycle={cycle} />
     </ThemeProvider>
   );
 }

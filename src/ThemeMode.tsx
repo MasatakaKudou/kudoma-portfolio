@@ -1,88 +1,108 @@
 import React, { useCallback, useEffect, useState } from 'react';
 
 import { IconButton, Tooltip } from '@mui/material';
+import BrightnessAutoIcon from '@mui/icons-material/BrightnessAuto';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import LightModeIcon from '@mui/icons-material/LightMode';
 
 import { ThemeMode, alpha, elevation, ocean } from './theme';
+import { ThemePreference, nextPreference, parsePreference, resolveMode } from './themePreference';
 
 const STORAGE_KEY = 'theme-mode';
 const DARK_QUERY = '(prefers-color-scheme: dark)';
 /** <meta name="theme-color"> に反映する、各モードの色（モバイルのアドレスバー用）。 */
 const THEME_COLORS: Record<ThemeMode, string> = { light: '#0074ae', dark: '#051b27' };
 
-const isMode = (value: unknown): value is ThemeMode => value === 'light' || value === 'dark';
-
 /** localStorage は無効化されていることがあるので、読み書きとも失敗しても壊れないようにする。 */
-const readStored = (): ThemeMode | null => {
+const readStored = (): string | null => {
   try {
-    const value = window.localStorage.getItem(STORAGE_KEY);
-    return isMode(value) ? value : null;
+    return window.localStorage.getItem(STORAGE_KEY);
   } catch {
     return null;
   }
 };
 
-const writeStored = (mode: ThemeMode) => {
+/**
+ * `system` は何も保存しない（キーを消す）。index.html のインラインスクリプトは、保存がなければ OS の設定に従うので、
+ * 描画前のテーマ決定と、ここでの解釈がそろう。
+ */
+const writePreference = (preference: ThemePreference) => {
   try {
-    window.localStorage.setItem(STORAGE_KEY, mode);
+    if (preference === 'system') window.localStorage.removeItem(STORAGE_KEY);
+    else window.localStorage.setItem(STORAGE_KEY, preference);
   } catch {
     /* 保存できなくても、そのセッション内では切り替わる。 */
   }
 };
 
-const systemMode = (): ThemeMode =>
-  typeof window.matchMedia === 'function' && window.matchMedia(DARK_QUERY).matches ? 'dark' : 'light';
-
-/** 初期値。public/index.html のインラインスクリプトが先に data-theme を決めているので、それに揃えてちらつきを防ぐ。 */
-const initialMode = (): ThemeMode => {
-  const applied = document.documentElement.dataset.theme;
-  return isMode(applied) ? applied : readStored() ?? systemMode();
-};
+const systemIsDark = (): boolean => typeof window.matchMedia === 'function' && window.matchMedia(DARK_QUERY).matches;
 
 /**
- * ライト/ダークの状態。保存された選択があればそれを使い、なければ OS 設定（prefers-color-scheme）に追従する。
+ * テーマの選択（OS に合わせる / ライト / ダーク）と、実際に使うモード。
+ * 初期値は保存された選択（なければ OS に合わせる）で、index.html のインラインスクリプトが先に決めた data-theme と同じ結果になる。
  */
 export const useThemeMode = () => {
-  const [mode, setMode] = useState<ThemeMode>(initialMode);
-  const [followsSystem, setFollowsSystem] = useState(() => readStored() === null);
+  const [preference, setPreference] = useState<ThemePreference>(() => parsePreference(readStored()));
+  const [osDark, setOsDark] = useState(systemIsDark);
 
   useEffect(() => {
-    if (!followsSystem || typeof window.matchMedia !== 'function') return;
+    if (typeof window.matchMedia !== 'function') return;
     const query = window.matchMedia(DARK_QUERY);
-    const onChange = () => setMode(query.matches ? 'dark' : 'light');
+    const onChange = () => setOsDark(query.matches);
     query.addEventListener('change', onChange);
     return () => query.removeEventListener('change', onChange);
-  }, [followsSystem]);
+  }, []);
+
+  const mode = resolveMode(preference, osDark);
 
   useEffect(() => {
     document.documentElement.dataset.theme = mode;
     document.querySelector('meta[name="theme-color"]')?.setAttribute('content', THEME_COLORS[mode]);
   }, [mode]);
 
-  const toggle = useCallback(() => {
-    const next: ThemeMode = mode === 'dark' ? 'light' : 'dark';
-    writeStored(next);
-    setFollowsSystem(false);
-    setMode(next);
-  }, [mode]);
+  /** OS に合わせる → ライト → ダーク → OS に合わせる、の順に切り替える。 */
+  const cycle = useCallback(() => {
+    const next = nextPreference(preference);
+    writePreference(next);
+    setPreference(next);
+  }, [preference]);
 
-  return { mode, toggle };
+  return { mode, preference, cycle };
+};
+
+const PREFERENCE_LABEL: Record<ThemePreference, string> = {
+  system: 'OS の設定に合わせる',
+  light: 'ライト',
+  dark: 'ダーク',
+};
+
+/** アイコンは、今の選択を表す（OS に合わせる / ライト / ダーク）。 */
+const PREFERENCE_ICON: Record<ThemePreference, React.ReactElement> = {
+  system: <BrightnessAutoIcon />,
+  light: <LightModeIcon />,
+  dark: <DarkModeIcon />,
 };
 
 interface ThemeToggleProps {
+  /** 実際に使われているモード。 */
   mode: ThemeMode;
-  onToggle: () => void;
+  /** 利用者の選択。 */
+  preference: ThemePreference;
+  onCycle: () => void;
 }
 
-/** 画面右下に固定するライト/ダーク切り替えボタン。 */
-export const ThemeToggle: React.FC<ThemeToggleProps> = ({ mode, onToggle }) => {
-  const label = mode === 'dark' ? 'ライトモードに切り替える' : 'ダークモードに切り替える';
+/** 画面右下に固定するテーマ切り替えボタン。押すたびに、OS に合わせる → ライト → ダークの順に変わる。 */
+export const ThemeToggle: React.FC<ThemeToggleProps> = ({ mode, preference, onCycle }) => {
+  const current =
+    preference === 'system'
+      ? `${PREFERENCE_LABEL.system}（今は${mode === 'dark' ? 'ダーク' : 'ライト'}）`
+      : PREFERENCE_LABEL[preference];
+  const label = `テーマ: ${current}。押すと「${PREFERENCE_LABEL[nextPreference(preference)]}」に切り替える`;
   return (
     <Tooltip title={label} placement="left">
       <IconButton
         aria-label={label}
-        onClick={onToggle}
+        onClick={onCycle}
         sx={{
           position: 'fixed',
           right: { xs: 12, md: 24 },
@@ -99,7 +119,7 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({ mode, onToggle }) => {
           '&:hover': { bgcolor: ocean.paper, boxShadow: elevation.lifted },
         }}
       >
-        {mode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}
+        {PREFERENCE_ICON[preference]}
       </IconButton>
     </Tooltip>
   );
