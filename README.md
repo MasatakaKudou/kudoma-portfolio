@@ -1,15 +1,15 @@
 # Kudoma Portfolio
 
-Personal portfolio site at <https://www.kudoma.net>, with a light and a dark theme. A single page with six sections: About, Skills, Experiences, Products, Blog (articles from Qiita, Zenn and the author's tech blog) and GitHub (pinned repositories and recent contributions).
+<https://www.kudoma.net> で公開している個人のポートフォリオサイト。ライトとダークの 2 つのテーマがある。1 ページに、About、Skills、Experiences、Products、Blog（Qiita・Zenn・自分のテックブログの記事）、GitHub（ピン留めリポジトリと直近のコントリビューション）の 6 つのセクションがある。
 
-## Tech stack
+## 技術スタック
 
-- **Site**: React, TypeScript, MUI (Emotion), built with Vite and hosted on GitHub Pages
-- **Backend**: two Cloudflare Workers (`workers/`) that fetch and normalize the article and GitHub data, with a read-through cache in Upstash Redis
-- **Tests and lint**: Jest (ts-jest) and ESLint; the Workers have their own `node:test` tests
-- **CI/CD**: GitHub Actions; dependencies are updated by Dependabot
+- **サイト**: React、TypeScript、MUI（Emotion）。Vite でビルドして、GitHub Pages で公開
+- **バックエンド**: Cloudflare Workers が 2 つ（`workers/`）。記事と GitHub のデータを取得して整形し、Upstash Redis のリードスルーキャッシュを持つ
+- **テストと lint**: Jest（ts-jest）と ESLint。Workers には、`node:test` の専用のテストがある
+- **CI/CD**: GitHub Actions。依存の更新は Dependabot
 
-## System Architecture
+## システム構成
 
 ```mermaid
 flowchart LR
@@ -22,50 +22,50 @@ flowchart LR
   GA <--> Redis
 ```
 
-The browser does not cache anything itself; the Workers own the cache (1 hour on success, 60 seconds on an upstream failure). Details are in [`workers/README.md`](workers/README.md).
+ブラウザはキャッシュを持たず、キャッシュは Worker が持つ（成功は 1 時間、上流の失敗は 60 秒）。詳しくは [`workers/README.md`](workers/README.md) を参照。
 
-## Getting started
+## 開発を始める
 
-The Node.js version is pinned in [`.node-version`](.node-version) and used by CI. With [fnm](https://github.com/Schniz/fnm), `fnm use` in this directory picks it up (or run `eval "$(fnm env --use-on-cd)"` in your shell profile to switch automatically).
+Node.js のバージョンは [`.node-version`](.node-version) で固定していて、CI も同じものを使う。[fnm](https://github.com/Schniz/fnm) なら、このディレクトリで `fnm use` を実行すると合わせられる（シェルの設定に `eval "$(fnm env --use-on-cd)"` を書くと、自動で切り替わる）。
 
 ```bash
 npm ci
-npm start        # dev server (Vite, http://localhost:5173 by default)
+npm start        # 開発サーバー（Vite。既定では http://localhost:5173）
 ```
 
-The site reads the Worker URLs from `.env` (`VITE_ARTICLE_BASE_URL`, `VITE_GITHUB_ACTIVITY_BASE_URL`), which point at the deployed Workers, so a local dev server shows real articles and GitHub data. To use other values, put them in `.env.local` (git-ignored).
+サイトは、Worker の URL を `.env`（`VITE_ARTICLE_BASE_URL`、`VITE_GITHUB_ACTIVITY_BASE_URL`）から読む。これはデプロイ済みの Worker を指しているので、ローカルの開発サーバーでも、実際の記事と GitHub のデータが表示される。別の値を使いたいときは、`.env.local`（Git の管理外）に書く。
 
-### Commands
+### コマンド
 
-| Command | What it does |
+| コマンド | 内容 |
 | --- | --- |
-| `npm start` | Dev server |
-| `npm run build` | Type-check (`tsc --noEmit`), then a production build into `build/` |
-| `npm run preview` | Serve the built `build/` locally |
-| `npm run lint` | ESLint over `src` |
-| `npm test` | Jest over `tests/` |
-| `npx jest tests/service/ArticleService.spec.ts` | One test file (add `-t "name"` for one test) |
+| `npm start` | 開発サーバー |
+| `npm run build` | 型チェック（`tsc --noEmit`）のあと、`build/` に本番ビルド |
+| `npm run preview` | ビルドした `build/` をローカルで配信 |
+| `npm run lint` | `src` に対する ESLint |
+| `npm test` | `tests/` に対する Jest |
+| `npx jest tests/service/ArticleService.spec.ts` | 1 つのテストファイルだけを実行（1 つのテストだけなら `-t "名前"` を追加） |
 
-The Workers are a separate package: `npm ci --prefix workers`, then `npm run typecheck --prefix workers` and `npm test --prefix workers`.
+Workers は別のパッケージ: `npm ci --prefix workers` のあと、`npm run typecheck --prefix workers` と `npm test --prefix workers`。
 
-## Project layout
+## ディレクトリ構成
 
-| Path | Contents |
+| パス | 内容 |
 | --- | --- |
-| `src/` | The site. `App.tsx` composes the page from `components/`; `theme.ts` holds the MUI theme and design tokens; `service/` fetches data from the Workers; `env.ts` reads the `VITE_*` variables |
-| `src/data/` | Static content (experiences, products, skills). **Edit content here** rather than in the components |
-| `tests/` | Jest tests for the site (`fetch` is mocked, so they make no network calls) |
-| `workers/` | The Cloudflare Workers (`article-backend`, `github-activity`) |
-| `public/` | Files copied as they are into the build (`CNAME`, favicons, `robots.txt`, `sitemap.xml`, ...) |
-| `.github/` | Workflows and Dependabot configuration |
+| `src/` | サイト本体。`App.tsx` が `components/` からページを組み立てる。`theme.ts` に MUI のテーマとデザイントークン、`service/` に Worker からデータを取得する処理、`env.ts` に `VITE_*` の読み込み |
+| `src/data/` | 静的なコンテンツ（経歴・プロダクト・スキル）。**内容を変えるときは、コンポーネントではここを編集する** |
+| `tests/` | サイトの Jest のテスト（`fetch` をモックしているので、ネットワークは呼ばない） |
+| `workers/` | Cloudflare Workers（`article-backend`、`github-activity`） |
+| `public/` | そのままビルドにコピーされるファイル（`CNAME`、favicon、`robots.txt`、`sitemap.xml` など） |
+| `.github/` | ワークフローと Dependabot の設定 |
 
 ## CI/CD
 
-- **Pull requests** run `ci.yml` (`lint-and-test`: lint, Jest, and the Workers type check). `main` is protected: changes go through a pull request and `lint-and-test` must pass.
-- **Merging to `main`** deploys the site to GitHub Pages (`deploy.yml`). A Worker is deployed only when its own directory changes (`deploy-article-backend.yml`, `deploy-github-activity.yml`), or by running the workflow manually. Deploy results are posted to Slack when `SLACK_WEBHOOK_URL` is set.
-- **Dependabot** opens grouped pull requests every Monday (JST) for the site, `workers/` and GitHub Actions. It cannot track the Node version in `.node-version` or the `wrangler` version pinned in the Worker deploy workflows, so bump those by hand. Major updates of the site's `typescript` are ignored for now (see `.github/dependabot.yml`).
+- **プルリクエスト**では `ci.yml`（`lint-and-test`: lint、Jest、Workers の型チェック）が走る。`main` は保護されていて、変更は PR で行い、`lint-and-test` が通る必要がある。
+- **`main` にマージ**すると、サイトが GitHub Pages にデプロイされる（`deploy.yml`）。Worker は、そのディレクトリが変わったときだけ（`deploy-article-backend.yml`、`deploy-github-activity.yml`）、または手動でワークフローを実行したときにデプロイされる。デプロイの結果は、`SLACK_WEBHOOK_URL` が設定されていれば Slack に通知される。
+- **Dependabot** が、毎週月曜（JST）に、サイト・`workers/`・GitHub Actions のグループ化した PR を作る。`.node-version` の Node のバージョンと、Worker のデプロイのワークフローに固定した `wrangler` のバージョンは追えないので、手で上げる。サイトの `typescript` の major 更新は、今は ignore している（`.github/dependabot.yml` を参照）。
 
-## More documentation
+## そのほかのドキュメント
 
-- [`workers/README.md`](workers/README.md): the Workers, their environment variables and how to deploy them
-- [`CLAUDE.md`](CLAUDE.md): architecture notes and conventions (written for Claude Code, useful for anyone)
+- [`workers/README.md`](workers/README.md): Worker、その環境変数、デプロイの方法
+- [`CLAUDE.md`](CLAUDE.md): アーキテクチャのメモと規約（Claude Code 向けに書いているが、誰にとっても参考になる）
