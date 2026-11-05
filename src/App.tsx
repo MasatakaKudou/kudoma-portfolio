@@ -99,7 +99,7 @@ function App() {
         <Section id="skills" title="Skills">
           <Accordion sx={{ mb: 3 }}>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Stack direction="row" alignItems="center" spacing={1}>
+              <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
                 <InfoIcon sx={{ color: ocean.main }} />
                 <Typography sx={{ fontWeight: 600 }}>スキルレベルの基準</Typography>
               </Stack>

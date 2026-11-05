@@ -65,7 +65,7 @@ export const GithubActivity: React.FC<GithubActivityProps> = ({ activity }) => {
                 {repo.description && (
                   <Typography variant="body2" sx={{ mt: 1, color: 'text.secondary', lineHeight: 1.7 }}>{repo.description}</Typography>
                 )}
-                <Stack direction="row" alignItems="center" useFlexGap flexWrap="wrap" sx={{ mt: 1.5, gap: 1 }}>
+                <Stack direction="row" useFlexGap sx={{ alignItems: 'center', flexWrap: 'wrap', mt: 1.5, gap: 1 }}>
                   {repo.language && <Chip size="small" label={repo.language} sx={{ bgcolor: ocean.main, color: ocean.onMain }} />}
                   <Chip size="small" variant="outlined" icon={<StarIcon />} label={repo.stars} aria-label={`スター ${repo.stars}`} sx={{ color: 'text.secondary' }} />
                 </Stack>

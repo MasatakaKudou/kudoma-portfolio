@@ -10,7 +10,7 @@ export const Footer = () => (
   <Box component="footer" sx={{ mt: rhythm.section }}>
     <WaveDivider flip />
     <Container maxWidth="lg">
-      <Stack alignItems="center" spacing={1.5} sx={{ pb: 6, pt: 1 }}>
+      <Stack spacing={1.5} sx={{ alignItems: 'center', pb: 6, pt: 1 }}>
         <Same size={44} interactive />
         <Typography sx={{ fontWeight: 700, letterSpacing: '.14em', color: alpha(ocean.deep, 0.7) }}>
           Kudoma Portfolio

@@ -49,7 +49,7 @@ export const Blog: React.FC<BlogProps> = ({ updatedAt, title, url, tag, likes, t
         <CardMedia component="img" image={thumbnail} alt="" loading="lazy" sx={{ height: 140, objectFit: 'cover' }} />
       )}
       <CardContent sx={{ p: 2.5 }}>
-        <Stack direction="row" useFlexGap flexWrap="wrap" sx={{ gap: 1 }}>
+        <Stack direction="row" useFlexGap sx={{ flexWrap: 'wrap', gap: 1 }}>
           <Chip
             size="small"
             label={tag}

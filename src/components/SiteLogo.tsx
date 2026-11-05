@@ -54,15 +54,14 @@ const Word: React.FC<{ children: React.ReactNode }> = ({ children }) => (
 /** サイトのワードマーク。2行に割ってサメを泳がせるロックアップ。 */
 export const SiteLogo = () => (
   <Box component="h1" sx={{ m: 0 }}>
-    <Stack direction="row" alignItems="center" spacing={{ xs: 1, md: 2 }}>
+    <Stack direction="row" spacing={{ xs: 1, md: 2 }} sx={{ alignItems: 'center' }}>
       <Word>Kudoma</Word>
       <Shark />
     </Stack>
     <Stack
       direction="row"
-      alignItems="center"
       spacing={{ xs: 1, md: 2 }}
-      sx={{ ml: { xs: 2, md: 5 }, mt: { xs: -0.5, md: -1 } }}
+      sx={{ alignItems: 'center', ml: { xs: 2, md: 5 }, mt: { xs: -0.5, md: -1 } }}
     >
       <Shark delay={1.4} />
       <Word>Portfolio</Word>

@@ -11,7 +11,7 @@ interface MainHeadingProps {
 
 /** セクション見出し。左のアクセントバーと右へ抜ける罫線で階層を明示する。 */
 export const MainHeading: React.FC<MainHeadingProps> = ({ title }) => (
-  <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: { xs: 3, md: 4 } }}>
+  <Stack direction="row" spacing={2} sx={{ alignItems: 'center', mb: { xs: 3, md: 4 } }}>
     <Box
       aria-hidden
       sx={{

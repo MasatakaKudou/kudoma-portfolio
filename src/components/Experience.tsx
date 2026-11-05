@@ -30,9 +30,8 @@ export const Experience: React.FC<ExperienceProps> = ({ title, period, tasks, la
     <AccordionSummary expandIcon={<ExpandMoreIcon />}>
       <Stack
         direction={{ xs: 'column', sm: 'row' }}
-        alignItems={{ xs: 'flex-start', sm: 'center' }}
         spacing={{ xs: 1, sm: 2 }}
-        sx={{ width: '100%', pr: 2 }}
+        sx={{ alignItems: { xs: 'flex-start', sm: 'center' }, width: '100%', pr: 2 }}
       >
         <Typography variant="h5" component="h3" sx={{ color: ocean.deep, flex: 1 }}>
           {title}
@@ -83,7 +82,7 @@ export const Experience: React.FC<ExperienceProps> = ({ title, period, tasks, la
       </Box>
 
       <SmallHeading title="使用技術" />
-      <Stack direction="row" useFlexGap flexWrap="wrap" sx={{ gap: 1 }}>
+      <Stack direction="row" useFlexGap sx={{ flexWrap: 'wrap', gap: 1 }}>
         {languages.map((language) => (
           <Chip
             key={language}

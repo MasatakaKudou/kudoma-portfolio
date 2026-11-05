@@ -81,7 +81,7 @@ export const About = () => {
 
         <Box sx={{ mt: 4 }}>
           <MediumHeading title="アカウント" underline />
-          <Stack direction="row" useFlexGap flexWrap="wrap" sx={{ gap: 1.5 }}>
+          <Stack direction="row" useFlexGap sx={{ flexWrap: 'wrap', gap: 1.5 }}>
             {accounts.map((account) => (
               <AccountLogo key={account.name} {...account} />
             ))}

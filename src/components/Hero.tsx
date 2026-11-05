@@ -44,9 +44,7 @@ export const Hero = () => (
       <Stack
         direction="row"
         useFlexGap
-        flexWrap="wrap"
-        alignItems="center"
-        sx={{ mt: { xs: 3, md: 4 }, ml: { xs: 0.5, md: 1 }, columnGap: 1.5, rowGap: 1 }}
+        sx={{ alignItems: 'center', flexWrap: 'wrap', mt: { xs: 3, md: 4 }, ml: { xs: 0.5, md: 1 }, columnGap: 1.5, rowGap: 1 }}
       >
         {skills.map(({ area }, index) => (
           <React.Fragment key={area}>
