@@ -16,7 +16,7 @@ Site (repo root):
 Workers (`workers/` has its own `package.json`, separate from the site's):
 
 - `npm ci --prefix workers && npm run typecheck --prefix workers` — type-check both Workers
-- `cd workers/<name> && npx wrangler@4.156.2 deploy --dry-run --outdir <dir>` — bundle without deploying (no login needed)
+- `cd workers/<name> && npx wrangler@4.158.0 deploy --dry-run --outdir <dir>` — bundle without deploying (no login needed)
 
 Node version is pinned in `.node-version` (26.13.0) and used by CI. The site is built with Vite 8, which needs Node 20.19+/22.12+.
 
@@ -50,7 +50,7 @@ Merging to `main` deploys automatically:
 - `deploy-github-activity.yml` — same for `workers/github-activity/**`. It reuses `CLOUDFLARE_API_TOKEN`, whose scope must include that Worker too.
 - All deploy workflows post the result to Slack via the `SLACK_WEBHOOK_URL` secret (skipped if unset).
 - `ci.yml` — on PRs and pushes: `npm run lint`, `npm test`, and the Workers type check. Job name `lint-and-test` is the required status check.
-- `.github/dependabot.yml` — weekly (Monday, JST) grouped PRs for the root npm, `workers/` npm and GitHub Actions. Dependabot cannot track `.node-version` or the `wrangler@4.156.2` pin inside the deploy workflows, so bump those by hand.
+- `.github/dependabot.yml` — weekly (Monday, JST) grouped PRs for the root npm, `workers/` npm and GitHub Actions. Dependabot cannot track `.node-version` or the `wrangler@4.158.0` pin inside the deploy workflows, so bump those by hand.
 
 `main` is protected: changes go through a PR, `lint-and-test` must pass, and this applies to admins too. Repo auto-merge is disabled, so merge manually after checks pass. For stacked PRs, don't delete the base branch before retargeting the next PR to `main` — GitHub closes it instead.
 
