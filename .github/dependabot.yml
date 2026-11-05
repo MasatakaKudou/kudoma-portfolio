@@ -12,12 +12,8 @@ updates:
     groups:
       minor-and-patch:
         update-types: [minor, patch]
-    ignore:
-      # Pinned to 4.9 for react-scripts (CRA).
-      - dependency-name: typescript
-        update-types: ["version-update:semver-major"]
 
-  # Workers (separate package.json; typescript stays current here)
+  # Workers (separate package.json)
   - package-ecosystem: npm
     directory: /workers
     schedule:

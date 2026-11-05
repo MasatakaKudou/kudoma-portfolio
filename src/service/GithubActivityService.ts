@@ -1,3 +1,4 @@
+import { GITHUB_ACTIVITY_BASE_URL } from '../env';
 import { HttpClient } from '../utils';
 
 export interface PinnedRepository {
@@ -24,7 +25,7 @@ export class GithubActivityService {
    * 上流が失敗したときは Worker が空の活動を返す（短い TTL でのみキャッシュ）ので、空も「取得できなかった」扱いにする。
    */
   public async fetchActivity(): Promise<GithubActivityData | undefined> {
-    const baseUrl = new URL(process.env.REACT_APP_GITHUB_ACTIVITY_BASE_URL);
+    const baseUrl = new URL(GITHUB_ACTIVITY_BASE_URL);
     baseUrl.pathname = '/github-activity';
     const response = await this.httpClient.get<GithubActivityData>(baseUrl.toString());
     if (!response || response.pinned.length === 0) {

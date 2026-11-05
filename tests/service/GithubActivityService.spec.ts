@@ -1,5 +1,7 @@
 import { GithubActivityService } from '../../src/service/GithubActivityService';
 
+jest.mock('../../src/env', () => ({ GITHUB_ACTIVITY_BASE_URL: 'https://github-activity.test' }));
+
 describe('GithubActivityService', () => {
   const ACTIVITY = {
     pinned: [{ name: 'r', description: null, url: 'https://github.com/u/r', stars: 1, language: 'TypeScript' }],
@@ -28,7 +30,7 @@ describe('GithubActivityService', () => {
     const result = await service.fetchActivity();
 
     const requested = new URL(fetchSpy.mock.calls[0][0]);
-    expect(requested.origin).toBe(new URL(process.env.REACT_APP_GITHUB_ACTIVITY_BASE_URL).origin);
+    expect(requested.origin).toBe('https://github-activity.test');
     expect(requested.pathname).toBe('/github-activity');
     expect(result).toEqual(ACTIVITY);
   });

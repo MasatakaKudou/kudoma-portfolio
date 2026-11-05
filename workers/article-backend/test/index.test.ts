@@ -131,6 +131,16 @@ describe("cache version", () => {
 });
 
 describe("routing", () => {
+  test("article responses are application/json, on a miss and on a hit", async () => {
+    assert.equal((await call("/articles/zenn")).headers.get("Content-Type"), "application/json");
+    handlers.redisGet = () => json({ result: "[]" });
+    assert.equal((await call("/articles/zenn", ENV_WITH_REDIS)).headers.get("Content-Type"), "application/json");
+  });
+
+  test("the plain-text 404 does not claim to be JSON", async () => {
+    assert.notEqual((await call("/nope")).headers.get("Content-Type"), "application/json");
+  });
+
   test("unknown sites and prototype names are 404", async () => {
     for (const path of ["/articles/foo", "/articles/constructor", "/articles/qiita/x", "/", "/get"]) {
       assert.equal((await call(path)).status, 404, path);
