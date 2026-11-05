@@ -27,10 +27,15 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version-file: .node-version
+          cache: npm
+          cache-dependency-path: workers/package-lock.json
+
+      # wrangler is a devDependency of workers/, so Dependabot keeps it up to date.
+      - run: npm ci --prefix workers
 
       - name: Deploy kudoma-portfolio-github-activity
         working-directory: workers/github-activity
-        run: npx wrangler@4.158.0 deploy
+        run: npx --no-install wrangler deploy
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

@@ -16,7 +16,7 @@
 Workers（`workers/` はサイトとは別の `package.json` を持つ）:
 
 - `npm ci --prefix workers && npm run typecheck --prefix workers` — 2 つの Worker の型チェック
-- `cd workers/<name> && npx wrangler@4.158.0 deploy --dry-run --outdir <dir>` — デプロイせずにバンドルだけ作る（ログイン不要）
+- `cd workers/<name> && npx wrangler deploy --dry-run --outdir <dir>` — デプロイせずにバンドルだけ作る（ログイン不要）。`wrangler` は `workers/package.json` の devDependency なので、先に `npm ci --prefix workers` が必要
 
 Node のバージョンは `.node-version`（26.13.0）で固定されていて、CI も同じものを使う。サイトのビルドは Vite 8 で、Node 20.19 以上 / 22.12 以上が必要。
 
@@ -47,11 +47,11 @@ www.kudoma.net の 1 ページのポートフォリオ（React + TypeScript + MU
 `main` にマージすると、自動でデプロイされる:
 
 - `deploy.yml` — `main` への push のたびに、サイトを GitHub Pages にデプロイする。`concurrency`（グループ `pages`）で、デプロイは同時に 1 つだけ。待っている実行は、新しいものに置き換わる。
-- `deploy-article-backend.yml` — `workers/article-backend/**` が変わったときだけ（または手動の「Run workflow」で）Worker をデプロイする。トークンはリポジトリの secret: `CLOUDFLARE_API_TOKEN`（その Worker だけに限定）と `CLOUDFLARE_ACCOUNT_ID`。
+- `deploy-article-backend.yml` — `workers/article-backend/**` が変わったときだけ（または手動の「Run workflow」で）Worker をデプロイする。トークンはリポジトリの secret: `CLOUDFLARE_API_TOKEN`（その Worker だけに限定）と `CLOUDFLARE_ACCOUNT_ID`。ワークフローは `npm ci --prefix workers` のあと、そこにある `wrangler` を `npx --no-install` で使う（バージョンを直書きしない）。
 - `deploy-github-activity.yml` — `workers/github-activity/**` について、同じ。`CLOUDFLARE_API_TOKEN` を使い回すので、そのスコープにこの Worker も含める必要がある。
 - すべてのデプロイのワークフローは、結果を `SLACK_WEBHOOK_URL` の secret 経由で Slack に通知する（未設定なら何もしない）。ジョブには `timeout-minutes` を付けてある。
 - `ci.yml` — PR と push で、`npm run lint`、`npm test`、Workers の型チェックを実行する。ジョブ名 `lint-and-test` が必須のステータスチェック。
-- `.github/dependabot.yml` — ルートの npm、`workers/` の npm、GitHub Actions について、毎週（月曜、JST）グループ化した PR を作る。サイトの `typescript` の major 更新は ignore している（`ts-jest` と `typescript-eslint` が TypeScript 7 に未対応。外す条件は #78）。Dependabot は、`.node-version` と、デプロイのワークフロー内の `wrangler@4.158.0` の固定を追えないので、それらは手で上げる。
+- `.github/dependabot.yml` — ルートの npm、`workers/` の npm、GitHub Actions について、毎週（月曜、JST）グループ化した PR を作る。サイトの `typescript` の major 更新は ignore している（`ts-jest` と `typescript-eslint` が TypeScript 7 に未対応。外す条件は #78）。Dependabot は `.node-version` を追えないので、これは手で上げる（`wrangler` は `workers/package.json` の devDependency なので、Dependabot が更新する）。
 
 `main` は保護されている。変更は PR で行い、`lint-and-test` が通る必要があり、これは管理者にも適用される。リポジトリの auto-merge は無効なので、チェックが通ったら手動でマージする。PR を積み重ねるときは、次の PR のターゲットを `main` に付け替える前に、ベースのブランチを削除しないこと（GitHub が PR をクローズしてしまう）。
 

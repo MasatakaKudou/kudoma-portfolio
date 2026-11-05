@@ -18,6 +18,8 @@ npm run typecheck --prefix workers
 
 CI は、プルリクエストのたびに型チェックを実行する。
 
+`wrangler` もこの `package.json` の devDependency にある（Dependabot が更新する）。デプロイのワークフローも、ここの `wrangler` を使う。
+
 ## 環境変数
 
 Cloudflare のダッシュボードで設定する（このリポジトリにはない）。`wrangler.toml` は `keep_vars = true` を設定しているので、デプロイしても消えない。
@@ -28,15 +30,16 @@ Cloudflare のダッシュボードで設定する（このリポジトリには
 ## デプロイ（手動）
 
 ```bash
+npm ci --prefix workers       # wrangler は workers/package.json の devDependency
 cd workers/article-backend
-npx wrangler@4 login          # 初回のみ
-npx wrangler@4 deploy --dry-run   # デプロイされる内容を確認
-npx wrangler@4 deploy
+npx wrangler login            # 初回のみ
+npx wrangler deploy --dry-run # デプロイされる内容を確認
+npx wrangler deploy
 ```
 
 ## デプロイ（GitHub Actions）
 
-Worker ごとに専用のワークフローがあり、`main` でそのディレクトリが変わったとき（または手動実行）にデプロイする:
+Worker ごとに専用のワークフローがあり、`main` でそのディレクトリが変わったとき（または手動実行）にデプロイする（`npm ci --prefix workers` のあと、ここの `wrangler` を使う）:
 
 - `.github/workflows/deploy-article-backend.yml`（トークン: `CLOUDFLARE_API_TOKEN`）
 - `.github/workflows/deploy-github-activity.yml`（トークン: `CLOUDFLARE_API_TOKEN`）
