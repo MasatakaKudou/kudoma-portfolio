@@ -32,6 +32,7 @@ www.kudoma.net の 1 ページのポートフォリオ（React + TypeScript + MU
 - **GitHub の活動**（ピン留めリポジトリ + 直近のコントリビューション）がもう 1 つの動的なデータ。`App.tsx` が `GithubActivityService.fetchActivity` を呼び、`<VITE_GITHUB_ACTIVITY_BASE_URL>/github-activity`（記事とは別の Worker）を取得して、`GithubActivity.tsx` で表示する。Worker は失敗時に空の活動を返し、サービスはそれを `undefined`（「取得できなかった」）にする。
 - `HttpClient` はエラーを握りつぶして `undefined` を返す（ログは `console.error`）。呼び出し側は、例外を捕まえるのではなく、結果がないことを「見つからなかった」として扱う。
 - 上流の失敗は、`article-backend` が空のリストとして 60 秒だけキャッシュする（成功は 1 時間）。変更する前に `workers/article-backend/src/index.ts` を読むこと。
+- **アクセス解析**は Cloudflare Web Analytics。`index.html` の末尾にある公式のスニペットだけで、アプリのコードは関わらない。`token` は、ページの HTML に埋め込まれて公開される値で、秘密ではない。ドメインの DNS が Cloudflare ではなく、プロキシも通していないので、自動挿入は使えず、スニペットを手動で埋め込んでいる。計測するのはページビューだけ（カスタムイベントには対応していない）。ローカルの開発サーバーでも読み込まれる（計測に混ざるかは未確認）。
 
 ### Workers（`workers/`）
 

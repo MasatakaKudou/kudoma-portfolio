@@ -8,6 +8,7 @@
 - **バックエンド**: Cloudflare Workers が 2 つ（`workers/`）。記事と GitHub のデータを取得して整形し、Upstash Redis のリードスルーキャッシュを持つ
 - **テストと lint**: Jest（ts-jest）と ESLint。Workers には、`node:test` の専用のテストがある
 - **CI/CD**: GitHub Actions。依存の更新は Dependabot
+- **アクセス解析**: [Cloudflare Web Analytics](https://developers.cloudflare.com/web-analytics/)（Cookie なし。ページビューのみ）。`index.html` の末尾のスニペットで計測する
 
 ## システム構成
 
