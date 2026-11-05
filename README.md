@@ -11,15 +11,13 @@ Personal portfolio site at <https://www.kudoma.net>, with a light and a dark the
 
 ## System Architecture
 
-![kudoma-portfolio drawio (1)](https://github.com/user-attachments/assets/0bdbfcc1-2df0-4757-a7ec-5c77280fea5e)
-
 ```mermaid
 flowchart LR
-  Browser -->|static files| Pages["GitHub Pages<br/>www.kudoma.net"]
-  Browser -->|"GET /articles/{site}"| AB["article-backend Worker"]
-  Browser -->|"GET /github-activity"| GA["github-activity Worker"]
-  AB --> Sources["Qiita / Zenn / WordPress APIs"]
-  GA --> GH["GitHub GraphQL API"]
+  Browser -->|static files| Pages["GitHub Pages"]
+  Browser -->|"GET /articles/{site}"| AB["article-backend<br/>Worker"]
+  Browser -->|"GET /github-activity"| GA["github-activity<br/>Worker"]
+  AB --> Sources["Qiita / Zenn /<br/>WordPress APIs"]
+  GA --> GH["GitHub<br/>GraphQL API"]
   AB <--> Redis[("Upstash Redis<br/>cache")]
   GA <--> Redis
 ```
