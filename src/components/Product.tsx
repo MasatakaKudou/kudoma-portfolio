@@ -19,6 +19,8 @@ import { elevation, ocean } from '../theme';
 export interface ProductProps {
   title: string;
   description: string;
+  /** 「何を解決したか」の一行説明。 */
+  solves?: string;
   url: {
     github?: string;
     product: string;
@@ -31,7 +33,7 @@ export interface ProductProps {
   };
 }
 
-export const Product: React.FC<ProductProps> = ({ title, description, url, skills, image }) => (
+export const Product: React.FC<ProductProps> = ({ title, description, solves, url, skills, image }) => (
   <Card
     sx={{
       display: 'flex',
@@ -52,6 +54,7 @@ export const Product: React.FC<ProductProps> = ({ title, description, url, skill
           width: '100%',
           height: 132,
           objectFit: 'cover',
+          objectPosition: 'top',
           borderBottom: `1px solid ${alpha(ocean.main, 0.1)}`,
         }}
       />
@@ -77,6 +80,14 @@ export const Product: React.FC<ProductProps> = ({ title, description, url, skill
       <Typography variant="body2" sx={{ color: 'text.secondary' }}>
         {description}
       </Typography>
+      {solves && (
+        <Typography variant="body2" sx={{ mt: 1.5 }}>
+          <Box component="span" sx={{ fontWeight: 700, color: 'primary.dark' }}>
+            解決したいこと：
+          </Box>
+          {solves}
+        </Typography>
+      )}
       <Stack direction="row" useFlexGap sx={{ flexWrap: 'wrap', gap: 1, mt: 2.5 }}>
         {skills.map((skill) => (
           <Chip
