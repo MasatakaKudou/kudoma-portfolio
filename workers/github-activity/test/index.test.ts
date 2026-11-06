@@ -152,6 +152,17 @@ describe("cache", () => {
     assert.equal(upstreamCalls().length, 0);
   });
 
+  test("the cache key includes the deployed version, so entries in the old shape are never served", async () => {
+    await call("/github-activity", { ...ENV_WITH_REDIS, CACHE_VERSION: "v1" });
+    assert.equal(redisCalls("get")[0].url, `${REDIS}/get/github-activity:v1`);
+    assert.match(redisCalls("set")[0].url, new RegExp(`^${REDIS}/set/github-activity:v1\\?EX=`));
+  });
+
+  test("the cache key falls back to dev without a version", async () => {
+    await call("/github-activity", ENV_WITH_REDIS);
+    assert.equal(redisCalls("get")[0].url, `${REDIS}/get/github-activity:dev`);
+  });
+
   test("a success is cached for an hour", async () => {
     await call("/github-activity", ENV_WITH_REDIS);
     assert.match(redisCalls("set")[0].url, /EX=3600$/);

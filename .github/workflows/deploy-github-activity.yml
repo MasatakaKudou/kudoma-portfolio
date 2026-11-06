@@ -35,7 +35,7 @@ jobs:
 
       - name: Deploy kudoma-portfolio-github-activity
         working-directory: workers/github-activity
-        run: npx --no-install wrangler deploy
+        run: npx --no-install wrangler deploy --var CACHE_VERSION:${{ github.sha }}
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
