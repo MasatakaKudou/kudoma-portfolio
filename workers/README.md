@@ -45,3 +45,27 @@ Worker ごとに専用のワークフローがあり、`main` でそのディレ
 - `.github/workflows/deploy-github-activity.yml`（トークン: `CLOUDFLARE_API_TOKEN`）
 
 リポジトリの secret は、これらの Worker の編集だけに限定した API トークン（`CLOUDFLARE_API_TOKEN`）と `CLOUDFLARE_ACCOUNT_ID`。新しい Worker は、トークンのスコープに含める前に、一度作成（最初の手動デプロイ）しておく必要がある。
+
+## キャッシュの確認
+
+キャッシュ（Upstash Redis）が動いているかは、次の 2 つで確認できる。API のレスポンスには、キャッシュに当たったかどうかを示すヘッダーはない。
+
+### Upstash の Data Browser でキーを見る
+
+1. Upstash のコンソールで、このアプリの Redis データベースを開き、Data Browser を選ぶ。
+2. キーを検索する。
+   - `article-backend`: `articles*`。キーは `articles:<デプロイのコミット SHA>:<site>`（`site` は `qiita` / `zenn` / `kudoma`）。デプロイのたびに SHA が変わるので、古いデプロイのキーは、TTL が切れて消えるまで残る。
+   - `github-activity`: `github-activity`
+   - 画面によっては、`:` が `%3A` と表示されることがある。検索は `articles*` で足りる。
+3. キーを開いて、TTL と値を確認する。
+   - TTL: 成功した結果は 3600 秒（1 時間）以下、上流の取得に失敗した直後の（空の）結果は 60 秒以下
+   - 値: `article-backend` は記事のリスト（`{title, updatedAt, url, ...}` の配列）、`github-activity` は `{pinned, contributions}`。失敗時は空のリスト・空の活動
+
+### Worker のログでエラーを見る
+
+Cloudflare のダッシュボードで対象の Worker を開き、リアルタイムログ（Real-time Logs）を見ながら、サイトを開いて（または `GET /articles/<site>` / `GET /github-activity` を呼んで）ログを確認する。
+
+- `Failed to read cache` / `Failed to write cache`: Upstash への読み書きに失敗している。API のレスポンスは、上流から取得して返すので、止まらない（キャッシュが効かないだけ）。
+- `UPSTASH_REDIS_REST_URL / UPSTASH_REDIS_REST_TOKEN are not set: serving without a cache`: 環境変数が設定されていない（または名前が違う）。キャッシュなしで動いている。
+
+ログの保存（Observability）は有効にしていないので、過去のログは見られない。
