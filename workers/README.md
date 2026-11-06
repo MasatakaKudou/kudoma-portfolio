@@ -55,7 +55,7 @@ Worker ごとに専用のワークフローがあり、`main` でそのディレ
 1. Upstash のコンソールで、このアプリの Redis データベースを開き、Data Browser を選ぶ。
 2. キーを検索する。
    - `article-backend`: `articles*`。キーは `articles:<デプロイのコミット SHA>:<site>`（`site` は `qiita` / `zenn` / `kudoma`）。デプロイのたびに SHA が変わるので、古いデプロイのキーは、TTL が切れて消えるまで残る。
-   - `github-activity`: `github-activity`
+   - `github-activity`: `github-activity*`。キーは `github-activity:<デプロイのコミット SHA>`（`article-backend` と同じ扱い）
    - 2026-11-07 より前のデプロイで書かれたキーは、`:` が `%3A` になっている（例: `articles%3A<SHA>%3Azenn`）。TTL（最長 1 時間）で消える。
 3. キーを開いて、TTL と値を確認する。
    - TTL: 成功した結果は 3600 秒（1 時間）以下、上流の取得に失敗した直後の（空の）結果は 60 秒以下

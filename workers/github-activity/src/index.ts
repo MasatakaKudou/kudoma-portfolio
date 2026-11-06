@@ -7,6 +7,9 @@ interface Env {
   // works, just without caching (and logs a warning).
   UPSTASH_REDIS_REST_URL?: string;
   UPSTASH_REDIS_REST_TOKEN?: string;
+  // Set to the commit SHA by the deploy workflow (`--var CACHE_VERSION:<sha>`). It is part of the
+  // cache key, so a deploy never serves an entry written by the previous code. "dev" when unset.
+  CACHE_VERSION?: string;
 }
 
 interface PinnedRepository {
@@ -88,7 +91,6 @@ const CACHE_TTL_SECONDS = 3600;
 // but the activity comes back soon after it recovers.
 const FAILURE_TTL_SECONDS = 60;
 
-const CACHE_KEY = "github-activity";
 
 const EMPTY: GithubActivity = { pinned: [], contributions: { total: 0, days: [] } };
 
@@ -107,7 +109,8 @@ export default {
       return new Response("Not Found", { status: 404, headers });
     }
 
-    const cached = await readCache(env, CACHE_KEY);
+    const cacheKey = `github-activity:${env.CACHE_VERSION ?? "dev"}`;
+    const cached = await readCache(env, cacheKey);
     if (cached !== undefined) {
       return new Response(cached, { status: 200, headers });
     }
@@ -116,7 +119,7 @@ export default {
     // "could not fetch"), but it is cached only for FAILURE_TTL_SECONDS.
     const activity = await fetchActivity(env);
     const body = JSON.stringify(activity ?? EMPTY);
-    ctx.waitUntil(writeCache(env, CACHE_KEY, body, activity ? CACHE_TTL_SECONDS : FAILURE_TTL_SECONDS));
+    ctx.waitUntil(writeCache(env, cacheKey, body, activity ? CACHE_TTL_SECONDS : FAILURE_TTL_SECONDS));
 
     return new Response(body, { status: 200, headers });
   },
@@ -187,10 +190,12 @@ function hasCache(env: Env): env is Env & { UPSTASH_REDIS_REST_URL: string; UPST
 }
 
 // The cache is best-effort: any failure falls back to fetching from the upstream.
+// Keys are `github-activity:<sha>` (hex), so they go into the REST path as they are: encoding the
+// colon would make Upstash store it literally as `%3A`.
 async function readCache(env: Env, key: string): Promise<string | undefined> {
   if (!hasCache(env)) return undefined;
   try {
-    const response = await fetch(`${env.UPSTASH_REDIS_REST_URL}/get/${encodeURIComponent(key)}`, {
+    const response = await fetch(`${env.UPSTASH_REDIS_REST_URL}/get/${key}`, {
       headers: { Authorization: `Bearer ${env.UPSTASH_REDIS_REST_TOKEN}` },
     });
     if (!response.ok) {
@@ -208,7 +213,7 @@ async function readCache(env: Env, key: string): Promise<string | undefined> {
 async function writeCache(env: Env, key: string, value: string, ttl: number): Promise<void> {
   if (!hasCache(env)) return;
   try {
-    const response = await fetch(`${env.UPSTASH_REDIS_REST_URL}/set/${encodeURIComponent(key)}?EX=${ttl}`, {
+    const response = await fetch(`${env.UPSTASH_REDIS_REST_URL}/set/${key}?EX=${ttl}`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${env.UPSTASH_REDIS_REST_TOKEN}`,
