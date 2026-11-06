@@ -56,7 +56,7 @@ Worker ごとに専用のワークフローがあり、`main` でそのディレ
 2. キーを検索する。
    - `article-backend`: `articles*`。キーは `articles:<デプロイのコミット SHA>:<site>`（`site` は `qiita` / `zenn` / `kudoma`）。デプロイのたびに SHA が変わるので、古いデプロイのキーは、TTL が切れて消えるまで残る。
    - `github-activity`: `github-activity`
-   - 画面によっては、`:` が `%3A` と表示されることがある。検索は `articles*` で足りる。
+   - 2026-11-07 より前のデプロイで書かれたキーは、`:` が `%3A` になっている（例: `articles%3A<SHA>%3Azenn`）。TTL（最長 1 時間）で消える。
 3. キーを開いて、TTL と値を確認する。
    - TTL: 成功した結果は 3600 秒（1 時間）以下、上流の取得に失敗した直後の（空の）結果は 60 秒以下
    - 値: `article-backend` は記事のリスト（`{title, updatedAt, url, ...}` の配列）、`github-activity` は `{pinned, contributions}`。失敗時は空のリスト・空の活動

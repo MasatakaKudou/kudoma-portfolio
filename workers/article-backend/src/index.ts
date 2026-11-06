@@ -171,10 +171,12 @@ function hasCache(env: Env): env is Env & { UPSTASH_REDIS_REST_URL: string; UPST
 }
 
 // The cache is best-effort: any failure falls back to fetching from the upstream.
+// Keys are `articles:<sha>:<site>` (hex and lowercase letters), so they go into the REST path as
+// they are: encoding the colons made Upstash store them literally as `%3A`.
 async function readCache(env: Env, key: string): Promise<string | undefined> {
   if (!hasCache(env)) return undefined;
   try {
-    const response = await fetch(`${env.UPSTASH_REDIS_REST_URL}/get/${encodeURIComponent(key)}`, {
+    const response = await fetch(`${env.UPSTASH_REDIS_REST_URL}/get/${key}`, {
       headers: { Authorization: `Bearer ${env.UPSTASH_REDIS_REST_TOKEN}` },
     });
     if (!response.ok) {
@@ -192,7 +194,7 @@ async function readCache(env: Env, key: string): Promise<string | undefined> {
 async function writeCache(env: Env, key: string, value: string, ttl: number): Promise<void> {
   if (!hasCache(env)) return;
   try {
-    const response = await fetch(`${env.UPSTASH_REDIS_REST_URL}/set/${encodeURIComponent(key)}?EX=${ttl}`, {
+    const response = await fetch(`${env.UPSTASH_REDIS_REST_URL}/set/${key}?EX=${ttl}`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${env.UPSTASH_REDIS_REST_TOKEN}`,
