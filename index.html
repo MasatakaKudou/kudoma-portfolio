@@ -67,6 +67,16 @@
       }
     </script>
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <!-- 先頭の写真（LCP）を、JS の読み込みを待たずに取得させる。src/components/About.tsx の <picture> と、同じ URL・sizes にそろえること。 -->
+    <link
+      rel="preload"
+      as="image"
+      type="image/avif"
+      href="/images/me-420.avif"
+      imagesrcset="/images/me-420.avif 420w, /images/me-840.avif 840w"
+      imagesizes="(max-width: 468px) calc(100vw - 32px), 420px"
+      fetchpriority="high"
+    />
     <link rel="manifest" href="/manifest.json" />
     <title>Kudoma Portfolio</title>
   </head>
