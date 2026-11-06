@@ -116,9 +116,9 @@ describe("optional card metadata", () => {
 
   test("only the cache key for the deployed version is read, so entries in the old shape are never served", async () => {
     const old = JSON.stringify([{ title: "old", updatedAt: "x", url: "https://c.test" }]);
-    handlers.redisGet = (url) => json({ result: url.endsWith("articles%3Azenn") ? old : null });
+    handlers.redisGet = (url) => json({ result: url.endsWith("articles:zenn") ? old : null });
     const res = await call("/articles/zenn", ENV_WITH_REDIS);
-    assert.equal(redisCalls("get")[0].url, `${REDIS}/get/articles%3Av1%3Azenn`);
+    assert.equal(redisCalls("get")[0].url, `${REDIS}/get/articles:v1:zenn`);
     assert.notEqual(await res.text(), old);
   });
 });
@@ -126,7 +126,7 @@ describe("optional card metadata", () => {
 describe("cache version", () => {
   test("falls back to \"dev\" when CACHE_VERSION is not set", async () => {
     await call("/articles/qiita", { ...ENV_WITH_REDIS, CACHE_VERSION: undefined });
-    assert.equal(redisCalls("get")[0].url, `${REDIS}/get/articles%3Adev%3Aqiita`);
+    assert.equal(redisCalls("get")[0].url, `${REDIS}/get/articles:dev:qiita`);
   });
 });
 
@@ -162,7 +162,7 @@ describe("cache", () => {
     assert.equal(res.status, 200);
     assert.equal(upstreamCalls().length, 1);
     const [set] = redisCalls("set");
-    assert.equal(set.url, `${REDIS}/set/articles%3Av1%3Aqiita?EX=3600`);
+    assert.equal(set.url, `${REDIS}/set/articles:v1:qiita?EX=3600`);
     assert.equal((set.init?.headers as Record<string, string>).Authorization, "Bearer secret");
     assert.deepEqual(JSON.parse(String(set.init?.body)), await res.json());
   });
@@ -181,7 +181,7 @@ describe("cache", () => {
     const res = await call("/articles/zenn", ENV_WITH_REDIS);
     assert.equal(res.status, 200);
     assert.deepEqual(await res.json(), []);
-    assert.equal(redisCalls("set")[0].url, `${REDIS}/set/articles%3Av1%3Azenn?EX=60`);
+    assert.equal(redisCalls("set")[0].url, `${REDIS}/set/articles:v1:zenn?EX=60`);
   });
 
   test("upstream network error does not become a 500", async () => {
