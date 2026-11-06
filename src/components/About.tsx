@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { Box, Stack, Typography } from '@mui/material';
+import XIcon from '@mui/icons-material/X';
 import { alpha } from '../theme';
 
 import { AccountLogo } from '.';
@@ -13,6 +14,7 @@ const accounts = [
   { name: 'Qiita', src: qiitaIcon, url: 'https://qiita.com/kudoma' },
   { name: 'Speaker Deck', src: sdIcon, url: 'https://speakerdeck.com/kudoma' },
   { name: 'GitHub', src: githubIcon, url: 'https://github.com/MasatakaKudou' },
+  { name: 'X', icon: <XIcon />, url: 'https://x.com/kudomasataka' },
 ];
 
 const profile = [
