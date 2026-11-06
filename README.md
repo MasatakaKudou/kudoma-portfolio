@@ -64,7 +64,7 @@ Workers は別のパッケージ: `npm ci --prefix workers` のあと、`npm run
 
 - **プルリクエスト**では `ci.yml`（`lint-and-test`: lint、Jest、Workers の型チェック）が走る。`main` は保護されていて、変更は PR で行い、`lint-and-test` が通る必要がある。
 - **`main` にマージ**すると、サイトが GitHub Pages にデプロイされる（`deploy.yml`）。Worker は、そのディレクトリが変わったときだけ（`deploy-article-backend.yml`、`deploy-github-activity.yml`）、または手動でワークフローを実行したときにデプロイされる。デプロイの結果は、`SLACK_WEBHOOK_URL` が設定されていれば Slack に通知される。
-- **Dependabot** が、毎週月曜（JST）に、サイト・`workers/`・GitHub Actions のグループ化した PR を作る。`.node-version` の Node のバージョンと、Worker のデプロイのワークフローに固定した `wrangler` のバージョンは追えないので、手で上げる。サイトの `typescript` の major 更新は、今は ignore している（`.github/dependabot.yml` を参照）。
+- **Dependabot** が、毎週月曜（JST）に、サイト・`workers/`・GitHub Actions のグループ化した PR を作る。`.node-version` の Node のバージョンは追えないので、手で上げる。`wrangler` は `workers/package.json` の devDependency なので、Dependabot が更新する。サイトの `typescript` の major 更新は、今は ignore している（`.github/dependabot.yml` を参照）。
 
 ## そのほかのドキュメント
 
