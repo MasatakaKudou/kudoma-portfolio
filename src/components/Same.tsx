@@ -41,7 +41,8 @@ export const Same: React.FC<SameProps> = ({ size = 60, interactive = false }) =>
       if (!frame) frame = requestAnimationFrame(update);
     };
 
-    update();
+    // 初回表示では傾けない（scrollY の読み取りが強制レイアウトを起こし、初期描画を重くするため）。
+    // スクロール位置の復元はスクロールイベントとして届くので、そこで傾きが反映される。
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => {
       window.removeEventListener('scroll', onScroll);
