@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 
 import { Box, Button, Chip, Container, Stack, Typography } from '@mui/material';
-import { alpha } from '../theme';
 
 import { ocean } from '../theme';
 import { TaggedArticle } from '../types';
-import { Blog, BlogSkeleton, TAG_COLORS } from './Blog';
+import { Blog, BlogSkeleton, TAG_COLORS, TAG_TEXT_COLORS } from './Blog';
 
 const INITIAL_COUNT = 6;
 const STEP = 6;
@@ -41,7 +40,7 @@ export const BlogList: React.FC<BlogListProps> = ({ articles }) => {
   if (articles.length === 0) {
     return (
       <Container disableGutters>
-        <Typography role="status" sx={{ color: alpha(ocean.deep, 0.7) }}>記事を取得できませんでした。</Typography>
+        <Typography role="status" sx={{ color: 'text.secondary' }}>記事を取得できませんでした。</Typography>
       </Container>
     );
   }
@@ -83,7 +82,7 @@ export const BlogList: React.FC<BlogListProps> = ({ articles }) => {
               variant={selected ? 'filled' : 'outlined'}
               sx={
                 selected
-                  ? { bgcolor: color, color: TAG_COLORS[tag] ? '#fff' : ocean.onMain, '&:hover, &.Mui-focusVisible': { bgcolor: color } }
+                  ? { bgcolor: color, color: TAG_TEXT_COLORS[tag] ?? ocean.onMain, '&:hover, &.Mui-focusVisible': { bgcolor: color } }
                   : { borderColor: color, color: 'text.primary' }
               }
             />
@@ -97,7 +96,7 @@ export const BlogList: React.FC<BlogListProps> = ({ articles }) => {
       </Box>
       {remaining > 0 && (
         <Box sx={{ textAlign: 'center', mt: 3 }}>
-          <Button variant="outlined" onClick={() => setVisible((v) => v + STEP)}>
+          <Button variant="outlined" onClick={() => setVisible((v) => v + STEP)} sx={{ color: 'primary.dark' }}>
             もっと見る（残り {remaining} 件）
           </Button>
         </Box>

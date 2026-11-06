@@ -107,7 +107,8 @@ export const getTheme = (mode: ThemeMode) => {
       primary: { main: c.main, dark: c.deep, light: c.mid, contrastText: c.onMain },
       secondary: { main: c.light },
       background: { default: c.foam, paper: c.paper },
-      text: { primary: c.deep, secondary: muiAlpha(c.deep, 0.72) },
+      // 0.82: ライトの白・surface・foam・floor のどの背景でも AA（4.5:1）を満たす最小に近い値。0.72 だと白で 4.46:1 と足りない。
+      text: { primary: c.deep, secondary: muiAlpha(c.deep, 0.82) },
       divider: muiAlpha(c.main, 0.16),
     },
 
